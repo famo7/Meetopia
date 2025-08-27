@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.12",
+    "preline": "^3.2.3",
+    "tailwindcss": "^4.1.12",
     "vue": "^3.5.18"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",
