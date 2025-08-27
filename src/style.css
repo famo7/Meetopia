@@ -1,4 +1,4 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/forms";
 
-/* Import Preline UI components */
 @import '../node_modules/preline/variants.css';
