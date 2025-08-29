@@ -1,11 +1,11 @@
 // create basic router that usesx only App.vue as the main component
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../components/Home.vue';
+import Landing from '../views/Landing.vue';
 const routes = [
   {
     path: "/",
     name: "home",
-    component: Home,
+    component: Landing,
   }
 ]
 const router = createRouter({

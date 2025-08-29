@@ -1,0 +1,100 @@
+<template>
+  <header class="absolute inset-x-0 top-0 z-50">
+    <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+      <!-- Logo/Brand -->
+      <div class="flex lg:flex-1">
+        <router-link to="/" class="-m-1.5 p-1.5">
+          <span class="sr-only">Meetopia</span>
+          <span class="text-2xl font-bold text-primary">Meetopia</span>
+        </router-link>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="flex lg:hidden">
+        <Sheet>
+          <SheetTrigger as-child>
+            <Button variant="ghost" size="sm"
+              class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-muted-foreground">
+              <span class="sr-only">Open main menu</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+                class="h-6 w-6">
+                <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" class="w-full sm:max-w-sm bg-background/95 backdrop-blur">
+            <div class="flex items-center justify-between mb-6">
+              <router-link to="/" class="-m-1.5 p-1.5">
+                <span class="sr-only">Meetopia</span>
+                <span class="text-2xl font-bold text-primary">Meetopia</span>
+              </router-link>
+            </div>
+            <div class="">
+              <div class="-my-6 divide-y divide-border">
+                <div class="space-y-2 py-6">
+                  <router-link to="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
+                    Home
+                  </router-link>
+                  <router-link to="/features" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
+                    Features
+                  </router-link>
+                  <router-link to="/pricing"
+                    class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-foreground hover:bg-accent">
+                    Pricing
+                  </router-link>
+                  <router-link to="/about" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
+                    About
+                  </router-link>
+                </div>
+                <div class="py-6">
+                  <Button class="w-full">
+                    Sign In
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex lg:gap-x-12">
+        <router-link to="/" class="text-sm/6 font-semibold">
+          Home
+        </router-link>
+        <router-link to="/features" class="text-sm/6 font-semibold ">
+          Features
+        </router-link>
+        <router-link to="/pricing" class="text-sm/6 font-semibold ">
+          Pricing
+        </router-link>
+        <router-link to="/about" class="text-sm/6 font-semibold ">
+          About
+        </router-link>
+      </div>
+
+      <!-- Desktop Sign In -->
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+        <router-link to="/login" class="text-sm/6 font-semibold ">
+          <div>
+            Sign In
+            <MoveRight class="inline-block ml-1" size="14" :stroke-width="3.3" />
+          </div>
+        </router-link>
+      </div>
+    </nav>
+  </header>
+</template>
+
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { MoveRight } from 'lucide-vue-next';
+
+</script>
+
+<style scoped></style>
