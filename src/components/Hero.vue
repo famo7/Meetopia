@@ -31,7 +31,7 @@
             Into Action
           </h1>
 
-          <p class="mt-8 text-lg font-medium text-pretty text-muted-foreground sm:text-xl/8">
+          <p class="mt-8 text-lg font-medium text-pretty text-muted-foreground sm:text-xl/8 mb-12">
             The only platform you need to collaborate in real-time, track action items, and turn every meeting into
             measurable results.
           </p>

@@ -4,12 +4,12 @@
       <div class="max-w-6xl mx-auto">
         <!-- Section Header -->
         <div class="text-center mb-16">
-          <p class="text-sm font-semibold text-primary tracking-wide uppercase mb-4">Core Features</p>
-          <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 tracking-tight">
-            Everything you need for productive meetings
+          <p class="text-sm font-semibold text-primary tracking-wide uppercase mb-4">Features</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
+            Meet smarter, not harder
           </h2>
           <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Streamline your meetings with powerful collaboration tools designed for modern teams.
+            Transform your meetings into actionable outcomes with tools that actually work.
           </p>
         </div>
 
@@ -36,21 +36,21 @@ import {
 const features = [
 
   {
-    title: 'Real-time Collaboration',
-    description: 'Share notes instantly with live editing and auto-save functionality. See who\'s editing in real-time.',
-    linkText: 'Learn more',
+    title: 'Collaborate in real-time',
+    description: 'Edit notes together instantly. See changes as they happen and never lose your thoughts.',
+    linkText: 'See how it works',
     icon: Users
   },
   {
-    title: 'Smart Action Items',
-    description: 'Create, assign, and track tasks with priorities and due dates. Never miss important follow-ups.',
-    linkText: 'Learn more',
+    title: 'Track what matters',
+    description: 'Turn discussions into clear action items. Assign owners, set deadlines, and follow through.',
+    linkText: 'Start organizing',
     icon: CheckSquare
   },
   {
-    title: 'Instant Sharing',
-    description: 'Generate shareable links and join meetings with a single click. No complex setup required.',
-    linkText: 'Learn more',
+    title: 'Share instantly',
+    description: 'One link, one click. Join meetings or share notes without the hassle.',
+    linkText: 'Try sharing',
     icon: Share2
   },
 ]
