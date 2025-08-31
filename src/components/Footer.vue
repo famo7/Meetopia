@@ -68,9 +68,10 @@
               </Button>
             </li>
             <li>
-              <Button variant="link" class="h-auto p-0 text-sm text-muted-foreground hover:text-foreground">
+              <RouterLink to="/privacy-policy"
+                class="text-sm text-muted-foreground hover:text-foreground hover:underline">
                 Privacy Policy
-              </Button>
+              </RouterLink>
             </li>
           </ul>
           <div class="flex space-x-4">
