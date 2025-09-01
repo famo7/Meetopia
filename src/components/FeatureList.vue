@@ -2,14 +2,13 @@
   <section class="py-24 sm:py-32 bg-muted/30">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-6xl mx-auto">
-        <!-- Section Header -->
         <div class="text-center mb-16">
           <p class="text-sm font-semibold text-primary tracking-wide uppercase mb-4">Features</p>
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
             Meet smarter, not harder
           </h2>
           <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Transform your meetings into actionable outcomes with tools that actually work.
+            Turn discussion into action. End meeting fatigue with a platform designed for real results.
           </p>
         </div>
 
@@ -32,24 +31,23 @@ import {
   Share2
 } from 'lucide-vue-next'
 
-// Example features data
 const features = [
 
   {
     title: 'Collaborate in real-time',
-    description: 'Edit notes together instantly. See changes as they happen and never lose your thoughts.',
+    description: "Edit meeting notes together in real-time. See teammates' cursors and changes live, so everyone is always on the same page.",
     linkText: 'See how it works',
     icon: Users
   },
   {
     title: 'Track what matters',
-    description: 'Turn discussions into clear action items. Assign owners, set deadlines, and follow through.',
+    description: "Capture decisions and assign clear action items before the meeting ends. Set deadlines, assign owners, and ensure nothing gets forgotten.",
     linkText: 'Start organizing',
     icon: CheckSquare
   },
   {
     title: 'Share instantly',
-    description: 'One link, one click. Join meetings or share notes without the hassle.',
+    description: "Generate a simple link to invite your team. One click is all it takes for them to join the meeting and get to work.",
     linkText: 'Try sharing',
     icon: Share2
   },

@@ -2,7 +2,6 @@
   <section class="py-24 sm:py-32 bg-background">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-6xl mx-auto">
-        <!-- Section Header -->
         <div class="text-center mb-16">
           <Badge variant="outline"
             class="mb-6 px-4 py-2 rounded-full text-sm font-semibold tracking-wide  bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors">
@@ -12,23 +11,22 @@
             Get Started in 3 Easy Steps
           </h2>
           <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Our platform is simple to join, easy to use, and designed to help you start collaborating right away.
+            Go from chaotic discussions to clear outcomes in minutes. Meetopia is designed for focus, follow-through,
+            and finally, productive meetings.
           </p>
         </div>
 
-        <!-- Steps Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card v-for="step in steps" :key="step.title"
-            class="relative border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/50 backdrop-blur-sm">
+          <Card v-for="(step, index) in steps" :key="step.title"
+            class="relative border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/50 backdrop-blur-sm"
+            :class="{ 'ring-2 ring-primary/20': index === 1 }">
             <CardContent class="p-8 text-left">
-              <!-- Icon -->
               <div class="mb-6">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl">
                   <component :is="step.icon" class="w-8 h-8 text-primary" />
                 </div>
               </div>
 
-              <!-- Content -->
               <h3 class="text-xl font-bold text-foreground mb-3">{{ step.title }}</h3>
               <p class="text-muted-foreground leading-relaxed text-sm">{{ step.description }}</p>
             </CardContent>
@@ -49,22 +47,22 @@ import {
 } from 'lucide-vue-next'
 import Badge from './ui/badge/Badge.vue';
 import Card from './ui/card/Card.vue';
+import CardContent from './ui/card/CardContent.vue';
 
-// Steps data
 const steps = [
   {
-    title: '1. Schedule & invite',
-    description: 'Create a meeting link and share it with your team. They can join with one click.',
+    title: '1. Schedule & Invite',
+    description: 'Create your meeting and get a unique link. Send it to your team—that\'s the only setup needed.',
     icon: Calendar
   },
   {
-    title: '2. Meet & collaborate',
-    description: 'Take notes together in real-time. Everyone stays on the same page, literally.',
+    title: '2. Meet & Collaborate',
+    description: 'Build your agenda and notes together in real-time. See edits live, so everyone contributes and stays perfectly aligned.',
     icon: MessageSquare
   },
   {
-    title: '3. Follow through',
-    description: 'Assign action items with deadlines. Get automatic reminders so nothing falls through the cracks.',
+    title: '3. Follow Through',
+    description: 'Turn decisions into assigned action items with clear deadlines. Meetopia tracks it all and sends automatic reminders, so work actually gets done.',
     icon: CheckIcon
   }
 ]
@@ -81,6 +79,12 @@ const steps = [
   .grid.grid-cols-3>div:nth-child(2) {
     position: relative;
     z-index: 10;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid.grid-cols-3>div:nth-child(2) {
+    transform: scale(1.03);
   }
 }
 </style>

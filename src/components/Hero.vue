@@ -12,7 +12,6 @@
       </div>
 
       <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-        <!-- Beta announcement -->
         <div class="hidden sm:mb-8 sm:flex sm:justify-center">
           <div
             class="relative rounded-full px-3 py-1 text-sm text-muted-foreground ring-1 ring-border hover:ring-primary/50 transition-colors">

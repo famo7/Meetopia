@@ -25,7 +25,7 @@ interface Props {
   title: string
   description: string
   linkText?: string
-  icon: any // Component type for the icon
+  icon: any
 }
 
 withDefaults(defineProps<Props>(), {
