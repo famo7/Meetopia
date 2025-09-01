@@ -11,7 +11,7 @@
 
       <!-- Mobile menu button -->
       <div class="flex lg:hidden">
-        <Sheet>
+        <Sheet v-model:open="isSheetOpen">
           <SheetTrigger as-child>
             <Button variant="ghost" size="sm"
               class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-muted-foreground">
@@ -32,15 +32,15 @@
 
             <!-- Navigation Links -->
             <nav class="flex flex-col space-y-1">
-              <button @click="scrollToSection('features')"
+              <button @click="scrollToSectionMobile('features')"
                 class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 Features
               </button>
-              <button @click="scrollToSection('pricing')"
+              <button @click="scrollToSectionMobile('pricing')"
                 class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 Pricing
               </button>
-              <button @click="scrollToSection('about')"
+              <button @click="scrollToSectionMobile('about')"
                 class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 About
               </button>
@@ -86,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -94,16 +95,28 @@ import {
 } from '@/components/ui/sheet'
 import { MoveRight } from 'lucide-vue-next';
 
+// Sheet state
+const isSheetOpen = ref(false)
+
 // Smooth scroll to section function
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId)
   if (element) {
-    element.scrollIntoView({
+    element.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     })
   }
 }
-</script>
 
-<style scoped></style>
+// Mobile scroll function that closes the sheet
+const scrollToSectionMobile = (sectionId: string) => {
+  // Close the mobile sheet first
+  isSheetOpen.value = false
+  
+  // Wait a bit for the sheet to close, then scroll
+  setTimeout(() => {
+    scrollToSection(sectionId)
+  }, 300)
+}
+</script><style scoped></style>
