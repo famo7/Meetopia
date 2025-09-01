@@ -1,5 +1,5 @@
 <template>
-  <section class="py-24 sm:py-32 bg-muted/30">
+  <section id="pricing" class="py-24 sm:py-32 bg-muted/30">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto">
         <!-- Section Header -->
@@ -111,14 +111,12 @@ const freeFeatures = [
   'Real-time Collaborative Notes',
   'Create & View Action Items',
   'Up to 5 Participants',
-  'Basic Email Support'
 ]
 
 const proFeatures = [
   'Unlimited Active Meetings',
   'Up to 25 Participants per Meeting',
   'Assign Action Items & Set Due Dates',
-  'Priority Email Support',
   'Personal Action Item Dashboard'
 ]
 </script>

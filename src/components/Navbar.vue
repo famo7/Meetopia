@@ -32,22 +32,18 @@
 
             <!-- Navigation Links -->
             <nav class="flex flex-col space-y-1">
-              <router-link to="/"
-                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
-                Home
-              </router-link>
-              <router-link to="/features"
-                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+              <button @click="scrollToSection('features')"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 Features
-              </router-link>
-              <router-link to="/pricing"
-                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+              </button>
+              <button @click="scrollToSection('pricing')"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 Pricing
-              </router-link>
-              <router-link to="/about"
-                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+              </button>
+              <button @click="scrollToSection('about')"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors text-left">
                 About
-              </router-link>
+              </button>
             </nav>
 
             <!-- Sign In Button -->
@@ -63,18 +59,17 @@
 
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex lg:gap-x-12">
-        <router-link to="/" class="text-sm/6 font-semibold">
-          Home
-        </router-link>
-        <router-link to="/features" class="text-sm/6 font-semibold ">
+        <button @click="scrollToSection('features')"
+          class="text-sm/6 font-semibold hover:text-primary transition-colors">
           Features
-        </router-link>
-        <router-link to="/pricing" class="text-sm/6 font-semibold ">
+        </button>
+        <button @click="scrollToSection('pricing')"
+          class="text-sm/6 font-semibold hover:text-primary transition-colors">
           Pricing
-        </router-link>
-        <router-link to="/about" class="text-sm/6 font-semibold ">
+        </button>
+        <button @click="scrollToSection('about')" class="text-sm/6 font-semibold hover:text-primary transition-colors">
           About
-        </router-link>
+        </button>
       </div>
 
       <!-- Desktop Sign In -->
@@ -99,6 +94,16 @@ import {
 } from '@/components/ui/sheet'
 import { MoveRight } from 'lucide-vue-next';
 
+// Smooth scroll to section function
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }
+}
 </script>
 
 <style scoped></style>
