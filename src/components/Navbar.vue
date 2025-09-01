@@ -22,36 +22,40 @@
               </svg>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" class="w-full sm:max-w-sm bg-background/95 backdrop-blur">
-            <div class="flex items-center justify-between mb-6">
-              <router-link to="/" class="-m-1.5 p-1.5">
-                <span class="sr-only">Meetopia</span>
+          <SheetContent side="right" class="w-full sm:max-w-sm bg-background border-l border-border/20">
+            <!-- Header with Logo -->
+            <div class="flex items-center mb-8 pt-2">
+              <router-link to="/" class="flex items-center">
                 <span class="text-2xl font-bold text-primary">Meetopia</span>
               </router-link>
             </div>
-            <div class="">
-              <div class="-my-6 divide-y divide-border">
-                <div class="space-y-2 py-6">
-                  <router-link to="/" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
-                    Home
-                  </router-link>
-                  <router-link to="/features" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
-                    Features
-                  </router-link>
-                  <router-link to="/pricing"
-                    class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-foreground hover:bg-accent">
-                    Pricing
-                  </router-link>
-                  <router-link to="/about" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ">
-                    About
-                  </router-link>
-                </div>
-                <div class="py-6">
-                  <Button class="w-full">
-                    Sign In
-                  </Button>
-                </div>
-              </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex flex-col space-y-1">
+              <router-link to="/"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+                Home
+              </router-link>
+              <router-link to="/features"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+                Features
+              </router-link>
+              <router-link to="/pricing"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+                Pricing
+              </router-link>
+              <router-link to="/about"
+                class="flex items-center px-4 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
+                About
+              </router-link>
+            </nav>
+
+            <!-- Sign In Button -->
+            <div class="mt-8 pt-6 border-t border-border/20">
+              <Button class="w-full h-11 text-base font-medium">
+                Sign In
+                <MoveRight class="ml-2 h-4 w-4" />
+              </Button>
             </div>
           </SheetContent>
         </Sheet>
@@ -78,7 +82,7 @@
         <router-link to="/login" class="text-sm/6 font-semibold ">
           <div>
             Sign In
-            <MoveRight class="inline-block ml-1" size="14" :stroke-width="3.3" />
+            <MoveRight class="inline-block ml-1" :size="14" :stroke-width="3.3" />
           </div>
         </router-link>
       </div>
