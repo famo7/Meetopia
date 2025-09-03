@@ -1,33 +1,35 @@
 <template>
-  <section class="py-24 sm:py-32 bg-background">
+  <section class="py-16 sm:py-24 lg:py-32 bg-background">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12 sm:mb-16">
           <Badge variant="outline"
-            class="mb-6 px-4 py-2 rounded-full text-sm font-semibold tracking-wide  bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors">
+            class="mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide  bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors">
             How It Works
           </Badge>
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
+          <h2
+            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight px-4 sm:px-0">
             Get Started in 3 Easy Steps
           </h2>
-          <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p class="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Go from chaotic discussions to clear outcomes in minutes. Meetopia is designed for focus, follow-through,
             and finally, productive meetings.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           <Card v-for="(step, index) in steps" :key="step.title"
             class="relative border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-card/50 backdrop-blur-sm"
             :class="{ 'ring-2 ring-primary/20': index === 1 }">
-            <CardContent class="p-8 text-left">
-              <div class="mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl">
-                  <component :is="step.icon" class="w-8 h-8 text-primary" />
+            <CardContent class="p-6 sm:p-8 text-left">
+              <div class="mb-4 sm:mb-6">
+                <div
+                  class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-xl sm:rounded-2xl">
+                  <component :is="step.icon" class="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 </div>
               </div>
 
-              <h3 class="text-xl font-bold text-foreground mb-3">{{ step.title }}</h3>
+              <h3 class="text-lg sm:text-xl font-bold text-foreground mb-2 sm:mb-3">{{ step.title }}</h3>
               <p class="text-muted-foreground leading-relaxed text-sm">{{ step.description }}</p>
             </CardContent>
           </Card>

@@ -1,40 +1,44 @@
 <template>
-  <section class="py-24 sm:py-32 bg-background">
+  <section class="py-16 sm:py-24 lg:py-32 bg-background">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-3xl mx-auto">
         <!-- Section Header -->
-        <div class="text-center mb-16">
+        <div class="text-center mb-12 sm:mb-16">
           <Badge variant="outline"
-            class="mb-6 px-4 py-2 rounded-full text-sm font-semibold tracking-wide bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors">
+            class="mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors">
             FAQ
           </Badge>
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
+          <h2
+            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight px-4 sm:px-0">
             Frequently Asked Questions
           </h2>
-          <p class="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p class="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             Everything you need to know about Meetopia. Can't find the answer you're looking for?
-            <Button variant="link" class="h-auto p-0 text-lg text-primary hover:text-primary/80 underline-offset-4">
+            <Button variant="link"
+              class="h-auto p-0 text-base sm:text-lg text-primary hover:text-primary/80 underline-offset-4">
               Contact us
             </Button>
           </p>
         </div>
 
         <!-- FAQ Accordion -->
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <div v-for="(item, index) in faqItems" :key="index">
             <Card class="border-0 shadow-sm hover:shadow-md transition-all duration-200">
               <CardContent class="p-0">
                 <Button @click="toggleItem(index)" variant="ghost"
-                  class="w-full p-6 text-left justify-between hover:bg-muted/30 rounded-lg">
-                  <span class="text-base font-medium text-foreground pr-4">{{ item.question }}</span>
-                  <ChevronDown class="h-5 w-5 text-muted-foreground transition-transform duration-200 flex-shrink-0"
+                  class="w-full p-4 sm:p-6 text-left justify-between hover:bg-muted/30 rounded-lg">
+                  <span class="text-sm sm:text-base font-medium text-foreground pr-3 sm:pr-4 leading-relaxed">{{
+                    item.question }}</span>
+                  <ChevronDown
+                    class="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-transform duration-200 flex-shrink-0 mt-0.5"
                     :class="{ 'rotate-180': openItems.has(index) }" />
                 </Button>
 
                 <div class="overflow-hidden transition-all duration-300 ease-in-out"
                   :class="openItems.has(index) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'">
-                  <div class="px-6 pb-6">
-                    <p class="text-muted-foreground leading-relaxed">{{ item.answer }}</p>
+                  <div class="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <p class="text-sm sm:text-base text-muted-foreground leading-relaxed">{{ item.answer }}</p>
                   </div>
                 </div>
               </CardContent>
