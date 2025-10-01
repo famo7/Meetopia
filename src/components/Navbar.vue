@@ -56,7 +56,8 @@
 
             <!-- Sign In Button -->
             <div class="p-4 border-t border-border/20 flex-shrink-0">
-              <Button class="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 rounded-lg">
+              <Button @click="navigateToRegister"
+                class="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 rounded-lg">
                 Sign In
                 <MoveRight class="ml-2 h-4 w-4" />
               </Button>
@@ -83,7 +84,7 @@
 
       <!-- Desktop Sign In -->
       <div class="hidden lg:flex">
-        <Button variant="ghost" size="sm" class="text-sm font-medium">
+        <Button @click="navigateToRegister" variant="ghost" size="sm" class="text-sm font-medium">
           Sign In
           <MoveRight class="ml-2 h-4 w-4" />
         </Button>
@@ -94,6 +95,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -102,8 +104,16 @@ import {
 } from '@/components/ui/sheet'
 import { MoveRight } from 'lucide-vue-next';
 
+const router = useRouter()
+
 // Sheet state
 const isSheetOpen = ref(false)
+
+// Navigate to register
+const navigateToRegister = () => {
+  isSheetOpen.value = false
+  router.push('/register')
+}
 
 // Smooth scroll to section function
 const scrollToSection = (sectionId: string) => {
