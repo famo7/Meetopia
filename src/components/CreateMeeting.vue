@@ -63,14 +63,43 @@
 
           <!-- Time Picker -->
           <div class="space-y-2">
-            <Label for="time">
+            <Label>
               Time
               <span class="text-destructive">*</span>
             </Label>
-            <div class="relative">
-              <Clock class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input id="time" v-model="selectedTime" type="time" class="pl-10" :disabled="isLoading" />
-            </div>
+            <Popover>
+              <PopoverTrigger as-child>
+                <Button variant="outline" :class="cn(
+                  'w-full justify-start text-left font-normal',
+                  !selectedTime && 'text-muted-foreground',
+                )" :disabled="isLoading">
+                  <Clock class="mr-2 h-4 w-4" />
+                  {{ selectedTime || 'Select time' }}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0" align="start">
+                <div class="p-3">
+                  <div class="flex gap-2">
+                    <div class="flex-1">
+                      <Label class="text-xs text-muted-foreground mb-1 block">Hour</Label>
+                      <select v-model="selectedHour"
+                        class="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        @change="updateTime">
+                        <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                      </select>
+                    </div>
+                    <div class="flex-1">
+                      <Label class="text-xs text-muted-foreground mb-1 block">Minute</Label>
+                      <select v-model="selectedMinute"
+                        class="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        @change="updateTime">
+                        <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
             <p v-if="errors.time" class="text-sm text-destructive">{{ errors.time }}</p>
           </div>
         </div>
@@ -159,6 +188,8 @@ const formData = ref({
 
 const selectedDate = ref<DateValue>()
 const selectedTime = ref('')
+const selectedHour = ref('09')
+const selectedMinute = ref('00')
 const isLoading = ref(false)
 const errors = ref({
   title: '',
@@ -172,7 +203,25 @@ const setDefaultTime = () => {
   const nextHour = new Date(now.getTime() + 65 * 60 * 1000) // 1 hour + 5 minutes
   const hours = String(nextHour.getHours()).padStart(2, '0')
   const minutes = String(nextHour.getMinutes()).padStart(2, '0')
-  selectedTime.value = `${hours}:${minutes}`
+
+  // Round minutes to nearest 15-minute interval
+  const minuteOptions = ['00', '15', '30', '45']
+  const roundedMinute = minuteOptions.reduce((prev, curr) => {
+    return Math.abs(parseInt(curr) - parseInt(minutes)) < Math.abs(parseInt(prev) - parseInt(minutes)) ? curr : prev
+  })
+
+  selectedHour.value = hours
+  selectedMinute.value = roundedMinute
+  selectedTime.value = `${hours}:${roundedMinute}`
+}
+
+// Generate hours and minutes arrays
+const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
+const minutes = ['00', '15', '30', '45']
+
+// Update time when hour/minute changes
+const updateTime = () => {
+  selectedTime.value = `${selectedHour.value}:${selectedMinute.value}`
 }
 
 // Initialize default time on mount
