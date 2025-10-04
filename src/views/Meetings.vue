@@ -158,6 +158,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Create Meeting Modal -->
+    <CreateMeeting :is-open="showCreateDialog" @close="showCreateDialog = false" @success="handleMeetingCreated" />
   </div>
 </template>
 
@@ -175,6 +178,7 @@ import {
 } from '@/components/ui/card'
 import { Plus, Search, Calendar, Users, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 import type { Meeting } from '@/types/meeting'
+import CreateMeeting from '@/components/CreateMeeting.vue'
 
 const meetingStore = useMeetingStore()
 const authStore = useAuthStore()
@@ -252,6 +256,12 @@ const confirmDelete = async () => {
   } finally {
     isDeleting.value = false
   }
+}
+
+const handleMeetingCreated = () => {
+  // Meeting store already added the new meeting in createMeeting action
+  // No need to refetch - just close the dialog
+  showCreateDialog.value = false
 }
 
 onMounted(async () => {

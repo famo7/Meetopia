@@ -14,13 +14,10 @@ const isCheckingAuth = ref(true)
 onMounted(async () => {
   await authStore.checkAuth()
 
+  // Only redirect if on guest pages and authenticated
   if (authStore.isAuthenticated && (route.path === '/' || route.path === '/login' || route.path === '/register')) {
     router.push('/dashboard')
   }
-  else if (!authStore.isAuthenticated && route.path.startsWith('/dashboard')) {
-    router.push('/login')
-  }
-
   isCheckingAuth.value = false
 })
 </script>

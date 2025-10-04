@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/lib/axios'
+import { useAuthStore } from './auth'
 import type {
   Meeting,
   DetailedMeeting,
@@ -73,7 +74,34 @@ export const useMeetingStore = defineStore('meeting', () => {
     try {
       const response = await api.post<MeetingResponse>('/meetings', data)
       const newMeeting = response.data.meeting as Meeting
-      meetings.value.unshift(newMeeting)
+
+      const authStore = useAuthStore()
+
+      // Ensure all required properties exist for the UI
+      if (!newMeeting._count) {
+        newMeeting._count = {
+          participants: 0,
+          actionItems: 0,
+        }
+      }
+
+      // Add creator info if missing (use current user)
+      if (!newMeeting.creator && authStore.user) {
+        newMeeting.creator = {
+          id: typeof authStore.user.id === 'string' ? parseInt(authStore.user.id) : authStore.user.id,
+          name: authStore.user.name,
+          email: authStore.user.email,
+        }
+      }
+
+      // Add empty participants array if missing
+      if (!newMeeting.participants) {
+        newMeeting.participants = []
+      }
+
+      // Add to the beginning of the array with spread operator for reactivity
+      meetings.value = [newMeeting, ...meetings.value]
+
       return newMeeting
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to create meeting'

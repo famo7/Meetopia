@@ -25,13 +25,13 @@
 
       <!-- Quick Actions -->
       <div class="flex gap-3">
-        <Button size="lg" class="gap-2">
+        <Button size="lg" class="gap-2" @click="showCreateMeeting = true">
           <Plus class="h-4 w-4" />
           Create Meeting
         </Button>
-        <Button variant="outline" size="lg" class="gap-2">
-          <Calendar class="h-4 w-4" />
-          View Calendar
+        <Button variant="outline" size="lg" class="gap-2" @click="router.push('/dashboard/meetings')">
+          <List class="h-4 w-4" />
+          View All Meetings
         </Button>
       </div>
 
@@ -188,11 +188,14 @@
         </CardContent>
       </Card>
     </template>
+
+    <!-- Create Meeting Modal -->
+    <CreateMeeting :is-open="showCreateMeeting" @close="showCreateMeeting = false" @success="handleMeetingCreated" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -206,11 +209,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Calendar, Clock, Users, CheckCircle2, Plus, AlertCircle, TrendingUp, ChevronRight } from 'lucide-vue-next'
+import { Calendar, Clock, Users, CheckCircle2, Plus, AlertCircle, TrendingUp, ChevronRight, List } from 'lucide-vue-next'
+import CreateMeeting from '@/components/CreateMeeting.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
+const showCreateMeeting = ref(false)
 
 // Computed values
 const completionRate = computed(() => {
@@ -219,6 +224,10 @@ const completionRate = computed(() => {
   const completed = dashboardStore.actionItems.completedCount
   return total > 0 ? Math.round((completed / total) * 100) : 0
 })
+
+const handleMeetingCreated = async () => {
+  await dashboardStore.refreshDashboard()
+}
 
 onMounted(async () => {
   await dashboardStore.fetchDashboard()

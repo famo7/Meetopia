@@ -7,6 +7,7 @@ import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
 import DashboardHome from '../views/DashboardHome.vue';
 import Meetings from '../views/Meetings.vue';
+import Profile from '../views/Profile.vue';
 
 const routes = [
   {
@@ -45,12 +46,17 @@ const routes = [
       {
         path: "action-items",
         name: "action-items",
-        component: () => import('../views/DashboardHome.vue'), // Placeholder
+        component: () => import('../views/DashboardHome.vue'),
       },
       {
         path: "history",
         name: "history",
-        component: () => import('../views/DashboardHome.vue'), // Placeholder
+        component: () => import('../views/DashboardHome.vue'),
+      },
+      {
+        path: "profile",
+        name: "profile",
+        component: Profile,
       },
     ],
   },
