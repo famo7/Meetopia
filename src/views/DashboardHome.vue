@@ -196,6 +196,7 @@ import { onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
+import { formatMeetingTime, formatDueDate } from '@/lib/dateHelpers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -218,55 +219,6 @@ const completionRate = computed(() => {
   const completed = dashboardStore.actionItems.completedCount
   return total > 0 ? Math.round((completed / total) * 100) : 0
 })
-
-// Helper functions
-const formatMeetingTime = (date: string) => {
-  const meetingDate = new Date(date)
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-
-  const meetingDay = new Date(meetingDate.getFullYear(), meetingDate.getMonth(), meetingDate.getDate())
-
-  const timeStr = meetingDate.toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  })
-
-  if (meetingDay.getTime() === today.getTime()) {
-    return `Today, ${timeStr}`
-  } else if (meetingDay.getTime() === tomorrow.getTime()) {
-    return `Tomorrow, ${timeStr}`
-  } else {
-    return meetingDate.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-  }
-}
-
-const formatDueDate = (date: string) => {
-  const dueDate = new Date(date)
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-
-  const dueDay = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate())
-
-  if (dueDay.getTime() === today.getTime()) return 'Today'
-  if (dueDay.getTime() === tomorrow.getTime()) return 'Tomorrow'
-
-  return dueDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-}
 
 onMounted(async () => {
   await dashboardStore.fetchDashboard()

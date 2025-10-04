@@ -1,8 +1,4 @@
-export interface User {
-  id: number
-  name: string
-  email: string
-}
+import type { User } from './actionItem'
 
 export interface Meeting {
   id: number
@@ -19,7 +15,7 @@ export interface Meeting {
   }
 }
 
-export interface ActionItem {
+export interface DashboardActionItem {
   id: number
   title: string
   description: string | null
@@ -50,7 +46,7 @@ export interface DashboardData {
     meetingsCount: number
   }
   actionItems: {
-    pending: ActionItem[]
+    pending: DashboardActionItem[]
     pendingCount: number
     totalCount: number
     completedCount: number
