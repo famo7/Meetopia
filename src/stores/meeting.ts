@@ -4,7 +4,6 @@ import api from '@/lib/axios'
 import { useAuthStore } from './auth'
 import type {
   Meeting,
-  DetailedMeeting,
   CreateMeetingRequest,
   UpdateMeetingRequest,
   MeetingResponse,
@@ -14,7 +13,7 @@ import type {
 export const useMeetingStore = defineStore('meeting', () => {
   // State
   const meetings = ref<Meeting[]>([])
-  const currentMeeting = ref<DetailedMeeting | null>(null)
+  const currentMeeting = ref<Meeting | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -26,7 +25,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
   const pastMeetings = computed(() => {
     const now = new Date()
-    return (meetings.value || []).filter(m => new Date(m.date) <= now || m.status === 'COMPLETED')
+    return (meetings.value || []).filter(m => new Date(m.date) <= now || m.status === 'ENDED')
   })
 
   const activeMeetings = computed(() => {
@@ -57,7 +56,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
     try {
       const response = await api.get<MeetingResponse>(`/meetings/${id}`)
-      currentMeeting.value = response.data.meeting as DetailedMeeting
+      currentMeeting.value = response.data.meeting
       return currentMeeting.value
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to load meeting'
@@ -73,17 +72,9 @@ export const useMeetingStore = defineStore('meeting', () => {
 
     try {
       const response = await api.post<MeetingResponse>('/meetings', data)
-      const newMeeting = response.data.meeting as Meeting
+      const newMeeting = response.data.meeting
 
       const authStore = useAuthStore()
-
-      // Ensure all required properties exist for the UI
-      if (!newMeeting._count) {
-        newMeeting._count = {
-          participants: 0,
-          actionItems: 0,
-        }
-      }
 
       // Add creator info if missing (use current user)
       if (!newMeeting.creator && authStore.user) {
@@ -97,6 +88,11 @@ export const useMeetingStore = defineStore('meeting', () => {
       // Add empty participants array if missing
       if (!newMeeting.participants) {
         newMeeting.participants = []
+      }
+
+      // Add empty action items array if missing
+      if (!newMeeting.actionItems) {
+        newMeeting.actionItems = []
       }
 
       // Add to the beginning of the array with spread operator for reactivity
@@ -123,7 +119,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
       // Update current meeting if it's the same
       if (currentMeeting.value?.id === id) {
-        currentMeeting.value = updatedMeeting as DetailedMeeting
+        currentMeeting.value = updatedMeeting
       }
 
       return updatedMeeting

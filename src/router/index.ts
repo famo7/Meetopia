@@ -7,6 +7,8 @@ import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
 import DashboardHome from '../views/DashboardHome.vue';
 import Meetings from '../views/Meetings.vue';
+import MeetingDetail from '../views/MeetingDetail.vue';
+import LiveMeeting from '../views/LiveMeeting.vue';
 import Profile from '../views/Profile.vue';
 
 const routes = [
@@ -42,6 +44,16 @@ const routes = [
         path: "meetings",
         name: "meetings",
         component: Meetings,
+      },
+      {
+        path: "meetings/:id",
+        name: "meeting-detail",
+        component: MeetingDetail,
+      },
+      {
+        path: "meetings/:id/live",
+        name: "meeting-live",
+        component: LiveMeeting,
       },
       {
         path: "action-items",

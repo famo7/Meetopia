@@ -14,6 +14,17 @@ export const formatMeetingTime = (date: string | Date) => {
 }
 
 
+export function formatMeetingDate(dateString: string): string {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+
+
 export const formatDueDate = (date: string | Date) => {
   const dueDate = typeof date === 'string' ? parseISO(date) : date
 
@@ -22,7 +33,6 @@ export const formatDueDate = (date: string | Date) => {
 
   return format(dueDate, 'MMM d')
 }
-
 
 export const formatFullDate = (date: string | Date) => {
   const d = typeof date === 'string' ? parseISO(date) : date

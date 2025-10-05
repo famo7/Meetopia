@@ -166,6 +166,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMeetingStore } from '@/stores/meeting'
 import { useAuthStore } from '@/stores/auth'
 import { formatMeetingTime } from '@/lib/dateHelpers'
@@ -180,6 +181,7 @@ import { Plus, Search, Calendar, Users, CheckCircle2, AlertCircle } from 'lucide
 import type { Meeting } from '@/types/meeting'
 import CreateMeeting from '@/components/CreateMeeting.vue'
 
+const router = useRouter()
 const meetingStore = useMeetingStore()
 const authStore = useAuthStore()
 const searchQuery = ref('')
@@ -231,8 +233,7 @@ const getStatusVariant = (status: string) => {
 }
 
 const viewMeeting = async (id: number) => {
-  // TODO: Navigate to meeting detail page or open dialog
-  console.log('View meeting:', id)
+  router.push(`/dashboard/meetings/${id}`)
 }
 
 const openDeleteDialog = (id: number, title: string) => {

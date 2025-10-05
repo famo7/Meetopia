@@ -1,16 +1,18 @@
-export interface User {
-  id: number
-  name: string
-  email: string
-}
+import type { User } from './user'
+
+export type ActionItemStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE'
+export type Priority = 'LOW' | 'MEDIUM' | 'HIGH'
 
 export interface ActionItem {
   id: number
   title: string
-  description: string | null
-  status: 'OPEN' | 'IN_PROGRESS' | 'DONE'
-  priority: 'LOW' | 'MEDIUM' | 'HIGH'
-  dueDate: string
+  description: string
+  isCompleted: boolean
+  status: ActionItemStatus
+  priority: Priority
+  dueDate: string | null
+  createdAt: string
+  updatedAt: string
   meetingId: number
   assignedById: number
   assignedToId: number
@@ -20,25 +22,18 @@ export interface ActionItem {
 
 export interface CreateActionItemRequest {
   title: string
-  description?: string
-  priority: 'LOW' | 'MEDIUM' | 'HIGH'
-  dueDate: string
-  meetingId: number
+  description: string
+  priority: Priority
+  dueDate?: string
   assignedToId: number
+  meetingId: number
 }
 
 export interface UpdateActionItemRequest {
   title?: string
   description?: string
-  status?: 'OPEN' | 'IN_PROGRESS' | 'DONE'
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH'
+  status?: ActionItemStatus
+  priority?: Priority
   dueDate?: string
-}
-
-export interface ActionItemsResponse {
-  actionItems: ActionItem[]
-}
-
-export interface ActionItemResponse {
-  actionItem: ActionItem
+  isCompleted?: boolean
 }

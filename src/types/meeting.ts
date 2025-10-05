@@ -1,34 +1,14 @@
-import type { User, ActionItem } from './actionItem'
+import type { Participant } from './participant'
+import type { ActionItem } from './actionItem'
 
-export interface MeetingParticipant {
-  user: User
-}
+export type MeetingStatus = 'SCHEDULED' | 'ACTIVE' | 'ENDED' | 'CANCELLED'
 
-export interface Meeting {
-  id: number
-  title: string
-  description: string | null
-  date: string
-  status: 'SCHEDULED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
-  creatorId: number
-  creator: User
-  participants: MeetingParticipant[]
-  _count: {
-    participants: number
-    actionItems: number
-  }
-}
-
-export interface Note {
+export interface MeetingNote {
   id: number
   content: string
   createdAt: string
+  updatedAt: string
   meetingId: number
-}
-
-export interface DetailedMeeting extends Meeting {
-  notes: Note
-  actionItems: ActionItem[]
 }
 
 export interface CreateMeetingRequest {
@@ -41,11 +21,7 @@ export interface UpdateMeetingRequest {
   title?: string
   description?: string
   date?: string
-  status?: 'SCHEDULED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
-}
-
-export interface MeetingsResponse {
-  meetings: Meeting[]
+  status?: MeetingStatus
 }
 
 export interface MeetingsResponse {
@@ -53,5 +29,25 @@ export interface MeetingsResponse {
 }
 
 export interface MeetingResponse {
-  meeting: Meeting | DetailedMeeting
+  meeting: Meeting
+}
+
+export interface Meeting {
+  id: number
+  title: string
+  description: string
+  shareLink: string
+  date: string
+  createdAt: string
+  updatedAt: string
+  status: MeetingStatus
+  creatorId: number
+  creator: {
+    id: number
+    name: string
+    email: string
+  }
+  participants: Participant[]
+  notes: MeetingNote | null
+  actionItems: ActionItem[]
 }
