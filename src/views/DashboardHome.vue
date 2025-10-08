@@ -54,7 +54,7 @@
             <AlertCircle class="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">{{ dashboardStore.actionItems?.pendingCount || 0 }}</div>
+            <div class="text-2xl font-bold">{{ pendingActionsCount }}</div>
             <p class="text-xs text-muted-foreground">Tasks to complete</p>
           </CardContent>
         </Card>
@@ -102,7 +102,8 @@
               <div class="flex items-center gap-3 flex-1">
                 <div :class="`w-2 h-2 rounded-full ${meeting.status === 'ACTIVE' ? 'bg-green-500' :
                   meeting.status === 'SCHEDULED' ? 'bg-blue-500' :
-                    meeting.status === 'COMPLETED' ? 'bg-gray-500' : 'bg-yellow-500'
+                    meeting.status === 'ENDED' ? 'bg-gray-500' :
+                      meeting.status === 'CANCELLED' ? 'bg-red-500' : 'bg-yellow-500'
                   }`"></div>
                 <div class="flex-1">
                   <p class="font-medium">{{ meeting.title }}</p>
@@ -113,7 +114,7 @@
                     </p>
                     <p class="text-sm text-muted-foreground flex items-center gap-1">
                       <Users class="h-3 w-3" />
-                      {{ meeting._count.participants }} participants
+                      {{ meeting.participants?.length || 0 }} participants
                     </p>
                   </div>
                 </div>
@@ -144,8 +145,7 @@
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
-            <div v-for="item in (dashboardStore.actionItems?.pending || []).slice(0, 5)" :key="item.id"
-              @click="router.push('/dashboard/action-items')"
+            <div v-for="item in pendingActionItems" :key="item.id" @click="router.push('/dashboard/action-items')"
               class="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer group">
               <!-- Status Indicator -->
               <div class="mt-1">
@@ -165,8 +165,9 @@
                   {{ item.title }}
                 </p>
                 <div class="flex items-center gap-3 mt-1 text-xs">
-                  <p class="text-muted-foreground">Due: {{ formatDueDate(item.dueDate) }}</p>
-                  <p class="text-muted-foreground truncate">From: {{ item.meeting.title }}</p>
+                  <p class="text-muted-foreground">Due: {{ item.dueDate ? formatDueDate(item.dueDate) : 'No due date' }}
+                  </p>
+                  <p class="text-muted-foreground truncate">Meeting ID: {{ item.meetingId }}</p>
                 </div>
               </div>
 
@@ -179,8 +180,7 @@
                   class="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>
-            <div v-if="(dashboardStore.actionItems?.pending || []).length === 0"
-              class="text-center py-8 text-muted-foreground">
+            <div v-if="pendingActionItems.length === 0" class="text-center py-8 text-muted-foreground">
               <CheckCircle2 class="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>All caught up! No pending action items</p>
             </div>
@@ -218,10 +218,22 @@ const dashboardStore = useDashboardStore()
 const showCreateMeeting = ref(false)
 
 // Computed values
+const pendingActionItems = computed(() => {
+  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return []
+  return dashboardStore.actionItems
+    .filter(item => item.status !== 'DONE')
+    .slice(0, 5)
+})
+
+const pendingActionsCount = computed(() => {
+  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return 0
+  return dashboardStore.actionItems.filter(item => item.status !== 'DONE').length
+})
+
 const completionRate = computed(() => {
-  if (!dashboardStore.actionItems) return 0
-  const total = dashboardStore.actionItems.totalCount
-  const completed = dashboardStore.actionItems.completedCount
+  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return 0
+  const total = dashboardStore.actionItems.length
+  const completed = dashboardStore.actionItems.filter(item => item.status === 'DONE').length
   return total > 0 ? Math.round((completed / total) * 100) : 0
 })
 

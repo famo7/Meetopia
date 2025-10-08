@@ -49,14 +49,18 @@
               <p class="text-sm text-gray-600 mb-3">{{ meeting.description }}</p>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500">{{ formatFullDate(meeting.date) }} • {{ formatTime(meeting.date)
-                }}</span>
+                  }}</span>
                 <Badge :class="{
                   'bg-blue-100 text-blue-700 hover:bg-blue-100': meeting.status === 'SCHEDULED',
-                  'bg-green-100 text-green-700 hover:bg-green-100': meeting.status === 'COMPLETED',
+                  'bg-green-100 text-green-700 hover:bg-green-100': meeting.status === 'ENDED',
                   'bg-purple-100 text-purple-700 hover:bg-purple-100': meeting.status === 'ACTIVE',
+                  'bg-red-100 text-red-700 hover:bg-red-100': meeting.status === 'CANCELLED',
                 }" class="text-xs font-normal px-2 py-0.5">
-                  {{ meeting.status === 'SCHEDULED' ? 'Scheduled' : meeting.status === 'COMPLETED' ? 'Completed' :
-                    meeting.status === 'ACTIVE' ? 'Active' : meeting.status }}
+                  {{ meeting.status === 'SCHEDULED' ? 'Scheduled' :
+                    meeting.status === 'ENDED' ? 'Ended' :
+                      meeting.status === 'ACTIVE' ? 'Active' :
+                        meeting.status === 'CANCELLED' ? 'Cancelled' :
+                          meeting.status }}
                 </Badge>
               </div>
             </CardContent>
@@ -73,9 +77,9 @@
               </div>
             </CardHeader>
             <CardContent class="p-6">
-              <div v-if="meeting.notes" class="space-y-4">
+              <div v-if="meeting.notes && meeting.notes.content" class="space-y-4">
                 <div class="text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p class="whitespace-pre-wrap">{{ meeting.notes }}</p>
+                  <p class="whitespace-pre-wrap">{{ meeting.notes.content }}</p>
                 </div>
                 <Button v-if="meeting.status !== 'ACTIVE'" size="sm" class="bg-blue-600 hover:bg-blue-700 text-white"
                   @click="editNotes">

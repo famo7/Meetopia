@@ -87,13 +87,13 @@
                     <td class="p-4">
                       <div class="flex items-center gap-2">
                         <Users class="h-4 w-4 text-muted-foreground" />
-                        <span class="text-sm text-muted-foreground">{{ meeting._count.participants }}</span>
+                        <span class="text-sm text-muted-foreground">{{ meeting.participants?.length || 0 }}</span>
                       </div>
                     </td>
                     <td class="p-4">
                       <div class="flex items-center gap-2">
                         <CheckCircle2 class="h-4 w-4 text-muted-foreground" />
-                        <span class="text-sm text-muted-foreground">{{ meeting._count.actionItems }}</span>
+                        <span class="text-sm text-muted-foreground">{{ meeting.actionItems?.length || 0 }}</span>
                       </div>
                     </td>
                     <td class="p-4">
@@ -226,7 +226,7 @@ const getStatusVariant = (status: string) => {
   switch (status) {
     case 'SCHEDULED': return 'default'
     case 'ACTIVE': return 'default'
-    case 'COMPLETED': return 'secondary'
+    case 'ENDED': return 'secondary'
     case 'CANCELLED': return 'destructive'
     default: return 'default'
   }
