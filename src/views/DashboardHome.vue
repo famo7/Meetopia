@@ -119,7 +119,11 @@
                   </div>
                 </div>
               </div>
-              <Button size="sm" variant="outline">Join</Button>
+              <Button size="sm" :variant="meeting.status === 'ACTIVE' ? 'default' : 'outline'"
+                :disabled="meeting.status !== 'ACTIVE'"
+                @click.stop="meeting.status === 'ACTIVE' && router.push(`/dashboard/meetings/${meeting.id}`)">
+                {{ meeting.status === 'ACTIVE' ? 'Join Now' : 'Join' }}
+              </Button>
             </div>
             <div v-if="(dashboardStore.today?.meetings || []).length === 0"
               class="text-center py-8 text-muted-foreground">
