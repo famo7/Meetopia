@@ -40,7 +40,7 @@
                   </Button>
 
                   <!-- Edit Button -->
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" @click="showEditMeeting = true">
                     <Edit class="h-3.5 w-3.5 mr-1.5" />
                     Edit
                   </Button>
@@ -49,7 +49,7 @@
               <p class="text-sm text-gray-600 mb-3">{{ meeting.description }}</p>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500">{{ formatFullDate(meeting.date) }} • {{ formatTime(meeting.date)
-                  }}</span>
+                }}</span>
                 <Badge :class="{
                   'bg-blue-100 text-blue-700 hover:bg-blue-100': meeting.status === 'SCHEDULED',
                   'bg-green-100 text-green-700 hover:bg-green-100': meeting.status === 'ENDED',
@@ -179,11 +179,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Meeting Modal -->
+    <UpdateMeeting :is-open="showEditMeeting" :meeting="meeting" @close="showEditMeeting = false"
+      @success="handleMeetingUpdated" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMeetingStore } from '@/stores/meeting'
 import { formatFullDate, formatTime } from '@/lib/dateHelpers'
@@ -205,12 +209,14 @@ import {
   Video,
   Clock
 } from 'lucide-vue-next'
+import UpdateMeeting from '@/components/UpdateMeeting.vue'
 
 const route = useRoute()
 const router = useRouter()
 const meetingStore = useMeetingStore()
 
 const meeting = computed(() => meetingStore.currentMeeting)
+const showEditMeeting = ref(false)
 
 const loadMeeting = async () => {
   const id = parseInt(route.params.id as string)
@@ -238,6 +244,10 @@ const joinMeeting = () => {
 const editNotes = () => {
   // TODO: Open edit notes dialog
   console.log('Edit notes')
+}
+
+const handleMeetingUpdated = async () => {
+  await loadMeeting()
 }
 
 onMounted(() => {
