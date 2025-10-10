@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Loading State -->
     <div v-if="meetingStore.isLoading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center gap-4">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -8,38 +7,31 @@
       </div>
     </div>
 
-    <!-- Error State -->
     <div v-else-if="meetingStore.error" class="text-center py-12">
       <AlertCircle class="h-12 w-12 mx-auto mb-4 text-destructive" />
       <p class="text-destructive mb-4">{{ meetingStore.error }}</p>
       <Button @click="loadMeeting">Try Again</Button>
     </div>
 
-    <!-- Meeting Content -->
     <div v-else-if="meeting" class="max-w-6xl mx-auto p-6">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6">
-        <!-- Left Column - Meeting Info & Notes -->
         <div class="space-y-6">
-          <!-- Meeting Header Card -->
           <Card class="border-gray-200 shadow-sm">
             <CardContent class="p-6">
               <div class="flex items-start justify-between mb-3">
                 <h1 class="text-2xl font-bold text-gray-900">{{ meeting.title }}</h1>
                 <div class="flex items-center gap-2">
-                  <!-- Join Meeting Button (Only when ACTIVE) -->
                   <Button v-if="meeting.status === 'ACTIVE'" @click="joinMeeting"
                     class="bg-green-600 hover:bg-green-700 text-white">
                     <Video class="h-4 w-4 mr-1.5" />
                     Join Meeting
                   </Button>
 
-                  <!-- Scheduled Button (Disabled) -->
                   <Button v-else-if="meeting.status === 'SCHEDULED'" disabled variant="outline" size="sm">
                     <Clock class="h-4 w-4 mr-1.5" />
                     Scheduled
                   </Button>
 
-                  <!-- Edit Button -->
                   <Button size="sm" variant="outline" @click="showEditMeeting = true">
                     <Edit class="h-3.5 w-3.5 mr-1.5" />
                     Edit
@@ -66,7 +58,6 @@
             </CardContent>
           </Card>
 
-          <!-- Meeting Notes Card -->
           <Card class="border-gray-200 shadow-sm">
             <CardHeader class="pb-4 border-b border-gray-100">
               <div class="flex items-center justify-between">
@@ -78,20 +69,17 @@
               </div>
             </CardHeader>
             <CardContent class="p-6">
-              <!-- Has Notes -->
               <div v-if="meeting.notes && meeting.notes.content">
                 <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto">
                   {{ meeting.notes.content }}
                 </div>
               </div>
 
-              <!-- No Notes Yet -->
               <div v-else class="text-center py-12">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-3">
                   <FileText class="h-7 w-7 text-gray-400" />
                 </div>
 
-                <!-- Scheduled Meeting -->
                 <div v-if="meeting.status === 'SCHEDULED'">
                   <p class="text-sm font-medium text-gray-900 mb-1">No notes yet</p>
                   <p class="text-xs text-gray-500">
@@ -99,7 +87,6 @@
                   </p>
                 </div>
 
-                <!-- Active Meeting -->
                 <div v-else-if="meeting.status === 'ACTIVE'">
                   <p class="text-sm font-medium text-gray-900 mb-1">Meeting in progress</p>
                   <p class="text-xs text-gray-500">
@@ -127,7 +114,6 @@
           </Card>
         </div>
 
-        <!-- Right Column - Participants -->
         <div>
           <Card class="border-gray-200 shadow-sm">
             <CardHeader class="pb-4 border-b border-gray-100">
@@ -138,7 +124,6 @@
             </CardHeader>
             <CardContent class="p-4">
               <div class="space-y-2">
-                <!-- Creator -->
                 <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group">
                   <div class="relative">
                     <div
@@ -152,10 +137,8 @@
                     <p class="text-sm font-medium text-gray-900">{{ meeting.creator.name }}</p>
                     <p class="text-xs text-gray-500">Creator</p>
                   </div>
-                  <!-- Creator cannot remove themselves, but they can leave via the button at bottom -->
                 </div>
 
-                <!-- Participants List -->
                 <div v-for="(participant, index) in meeting.participants" :key="participant.id"
                   class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group">
                   <div class="relative">
@@ -180,7 +163,6 @@
                   </button>
                 </div>
 
-                <!-- Empty State -->
                 <div v-if="meeting.participants.length === 0" class="text-center py-8">
                   <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
                     <Users class="h-6 w-6 text-gray-400" />
@@ -189,9 +171,7 @@
                 </div>
               </div>
 
-              <!-- Action Buttons -->
               <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
-                <!-- Add Participant Button - Everyone can add -->
                 <Button variant="ghost" size="sm"
                   class="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                   @click="showAddParticipant = true">
@@ -199,7 +179,6 @@
                   Add Participant
                 </Button>
 
-                <!-- Leave Meeting Button - Anyone can leave (creator or participant) -->
                 <Button v-if="isCreator || isParticipant" variant="ghost" size="sm"
                   class="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
                   @click="handleLeaveMeeting">
@@ -213,14 +192,12 @@
       </div>
     </div>
 
-    <!-- Edit Meeting Modal -->
     <UpdateMeeting :is-open="showEditMeeting" :meeting="meeting" @close="showEditMeeting = false"
       @success="handleMeetingUpdated" />
 
-    <!-- Add Participant Modal -->
-    <!-- TODO: Create AddParticipant component -->
+    <AddParticipant :is-open="showAddParticipant" :meeting-id="meeting?.id || 0" @close="showAddParticipant = false"
+      @success="handleParticipantAdded" />
 
-    <!-- Remove Participant Confirmation -->
     <AlertDialog :open="showRemoveDialog" @update:open="showRemoveDialog = $event">
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -240,7 +217,6 @@
       </AlertDialogContent>
     </AlertDialog>
 
-    <!-- Leave Meeting Confirmation -->
     <AlertDialog :open="showLeaveDialog" @update:open="showLeaveDialog = $event">
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -302,6 +278,7 @@ import {
   Clock
 } from 'lucide-vue-next'
 import UpdateMeeting from '@/components/UpdateMeeting.vue'
+import AddParticipant from '@/components/AddParticipant.vue'
 import type { Participant } from '@/types/participant'
 
 const route = useRoute()
@@ -317,25 +294,14 @@ const showRemoveDialog = ref(false)
 const showLeaveDialog = ref(false)
 const participantToRemove = ref<Participant | null>(null)
 
-// Check if current user is the creator
 const isCreator = computed(() => {
   if (!meeting.value || !authStore.user) return false
-  const creatorId = typeof meeting.value.creator.id === 'string'
-    ? parseInt(meeting.value.creator.id)
-    : meeting.value.creator.id
-  const currentUserId = typeof authStore.user.id === 'string'
-    ? parseInt(authStore.user.id)
-    : authStore.user.id
-  return creatorId === currentUserId
+  return meeting.value.creator.id === authStore.user.id
 })
 
-// Check if current user is a participant
 const isParticipant = computed(() => {
   if (!meeting.value || !authStore.user) return false
-  const currentUserId = typeof authStore.user.id === 'string'
-    ? parseInt(authStore.user.id)
-    : authStore.user.id
-  return meeting.value.participants.some(p => p.userId === currentUserId)
+  return meeting.value.participants.some(p => p.userId === authStore.user!.id)
 })
 
 const loadMeeting = async () => {
@@ -362,6 +328,10 @@ const joinMeeting = () => {
 }
 
 const handleMeetingUpdated = async () => {
+  await loadMeeting()
+}
+
+const handleParticipantAdded = async () => {
   await loadMeeting()
 }
 
@@ -399,12 +369,8 @@ const handleLeaveMeeting = () => {
 const confirmLeave = async () => {
   if (!meeting.value || !authStore.user) return
 
-  const currentUserId = typeof authStore.user.id === 'string'
-    ? parseInt(authStore.user.id)
-    : authStore.user.id
-
   try {
-    await participantStore.leaveAsParticipant(meeting.value.id, currentUserId)
+    await participantStore.leaveAsParticipant(meeting.value.id, authStore.user.id)
     showLeaveDialog.value = false
     router.push('/dashboard/meetings')
   } catch (error) {

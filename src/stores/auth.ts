@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import api from '@/lib/axios'
 
 export interface User {
-  id: string
+  id: number
   name: string
   email: string
 }
