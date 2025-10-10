@@ -9,6 +9,7 @@ import DashboardHome from '../views/DashboardHome.vue';
 import Meetings from '../views/Meetings.vue';
 import MeetingDetail from '../views/MeetingDetail.vue';
 import LiveMeeting from '../views/LiveMeeting.vue';
+import ActionItems from '../views/ActionItems.vue';
 import Profile from '../views/Profile.vue';
 
 const routes = [
@@ -58,7 +59,7 @@ const routes = [
       {
         path: "action-items",
         name: "action-items",
-        component: () => import('../views/DashboardHome.vue'),
+        component: ActionItems,
       },
       {
         path: "history",

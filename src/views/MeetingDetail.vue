@@ -71,34 +71,57 @@
             <CardHeader class="pb-4 border-b border-gray-100">
               <div class="flex items-center justify-between">
                 <CardTitle class="text-base font-semibold text-gray-900">Meeting Notes</CardTitle>
-                <p v-if="meeting.status === 'ACTIVE'" class="text-xs text-muted-foreground">
-                  Join the meeting to collaborate live
-                </p>
+                <Badge v-if="meeting.status === 'ACTIVE'" class="bg-green-100 text-green-700 hover:bg-green-100">
+                  <div class="w-2 h-2 bg-green-600 rounded-full mr-1.5 animate-pulse"></div>
+                  Live
+                </Badge>
               </div>
             </CardHeader>
             <CardContent class="p-6">
-              <div v-if="meeting.notes && meeting.notes.content" class="space-y-4">
-                <div class="text-sm text-gray-700 leading-relaxed space-y-3">
-                  <p class="whitespace-pre-wrap">{{ meeting.notes.content }}</p>
+              <!-- Has Notes -->
+              <div v-if="meeting.notes && meeting.notes.content">
+                <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto">
+                  {{ meeting.notes.content }}
                 </div>
-                <Button v-if="meeting.status !== 'ACTIVE'" size="sm" class="bg-blue-600 hover:bg-blue-700 text-white"
-                  @click="editNotes">
-                  <Edit class="h-3.5 w-3.5 mr-1.5" />
-                  Edit Notes
-                </Button>
               </div>
+
+              <!-- No Notes Yet -->
               <div v-else class="text-center py-12">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-3">
                   <FileText class="h-7 w-7 text-gray-400" />
                 </div>
-                <p class="text-sm text-gray-500 mb-2">No meeting notes yet</p>
-                <p v-if="meeting.status === 'ACTIVE'" class="text-xs text-muted-foreground mb-4">
-                  Join the meeting to start taking notes
-                </p>
-                <Button v-if="meeting.status !== 'ACTIVE'" variant="outline" size="sm" @click="editNotes">
-                  <Edit class="h-3.5 w-3.5 mr-1.5" />
-                  Add Notes
-                </Button>
+
+                <!-- Scheduled Meeting -->
+                <div v-if="meeting.status === 'SCHEDULED'">
+                  <p class="text-sm font-medium text-gray-900 mb-1">No notes yet</p>
+                  <p class="text-xs text-gray-500">
+                    Notes will be created when the meeting starts
+                  </p>
+                </div>
+
+                <!-- Active Meeting -->
+                <div v-else-if="meeting.status === 'ACTIVE'">
+                  <p class="text-sm font-medium text-gray-900 mb-1">Meeting in progress</p>
+                  <p class="text-xs text-gray-500">
+                    Join now to start taking collaborative notes
+                  </p>
+                </div>
+
+                <!-- Ended Meeting -->
+                <div v-else-if="meeting.status === 'ENDED'">
+                  <p class="text-sm font-medium text-gray-900 mb-1">No notes were taken</p>
+                  <p class="text-xs text-gray-500">
+                    This meeting ended without any notes being recorded
+                  </p>
+                </div>
+
+                <!-- Cancelled Meeting -->
+                <div v-else-if="meeting.status === 'CANCELLED'">
+                  <p class="text-sm font-medium text-gray-900 mb-1">Meeting cancelled</p>
+                  <p class="text-xs text-gray-500">
+                    This meeting was cancelled
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -129,9 +152,7 @@
                     <p class="text-sm font-medium text-gray-900">{{ meeting.creator.name }}</p>
                     <p class="text-xs text-gray-500">Creator</p>
                   </div>
-                  <button class="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <X class="h-4 w-4 text-gray-400 hover:text-gray-600" />
-                  </button>
+                  <!-- Creator cannot remove themselves, but they can leave via the button at bottom -->
                 </div>
 
                 <!-- Participants List -->
@@ -152,8 +173,10 @@
                     <p class="text-sm font-medium text-gray-900">{{ participant.user.name }}</p>
                     <p class="text-xs text-gray-500 capitalize">{{ participant.role.toLowerCase() }}</p>
                   </div>
-                  <button class="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <X class="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                  <!-- Only creator can remove other participants -->
+                  <button v-if="isCreator" @click="handleRemoveParticipant(participant)"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity" title="Remove participant">
+                    <X class="h-4 w-4 text-gray-400 hover:text-red-600" />
                   </button>
                 </div>
 
@@ -166,12 +189,22 @@
                 </div>
               </div>
 
-              <!-- Add Participant Button -->
-              <div class="mt-4 pt-4 border-t border-gray-100">
+              <!-- Action Buttons -->
+              <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
+                <!-- Add Participant Button - Everyone can add -->
                 <Button variant="ghost" size="sm"
-                  class="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                  class="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  @click="showAddParticipant = true">
                   <Plus class="h-4 w-4 mr-1.5" />
                   Add Participant
+                </Button>
+
+                <!-- Leave Meeting Button - Anyone can leave (creator or participant) -->
+                <Button v-if="isCreator || isParticipant" variant="ghost" size="sm"
+                  class="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
+                  @click="handleLeaveMeeting">
+                  <X class="h-4 w-4 mr-1.5" />
+                  Leave Meeting
                 </Button>
               </div>
             </CardContent>
@@ -183,6 +216,53 @@
     <!-- Edit Meeting Modal -->
     <UpdateMeeting :is-open="showEditMeeting" :meeting="meeting" @close="showEditMeeting = false"
       @success="handleMeetingUpdated" />
+
+    <!-- Add Participant Modal -->
+    <!-- TODO: Create AddParticipant component -->
+
+    <!-- Remove Participant Confirmation -->
+    <AlertDialog :open="showRemoveDialog" @update:open="showRemoveDialog = $event">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Remove Participant?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to remove <strong>{{ participantToRemove?.user.name }}</strong> from this meeting?
+            <br /><br />
+            They will lose access to meeting notes and updates.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="cancelRemove">Cancel</AlertDialogCancel>
+          <AlertDialogAction @click="confirmRemove" class="bg-destructive hover:bg-destructive/90">
+            Remove
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <!-- Leave Meeting Confirmation -->
+    <AlertDialog :open="showLeaveDialog" @update:open="showLeaveDialog = $event">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Leave Meeting?</AlertDialogTitle>
+          <AlertDialogDescription>
+            <span v-if="isCreator">
+              As the creator, you will still own the meeting but will be removed from the participant list.
+            </span>
+            <span v-else>
+              You will no longer have access to meeting notes, action items, and updates. You can be re-invited by other
+              participants.
+            </span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="showLeaveDialog = false">Cancel</AlertDialogCancel>
+          <AlertDialogAction @click="confirmLeave" class="bg-destructive hover:bg-destructive/90">
+            Leave Meeting
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 
@@ -190,6 +270,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMeetingStore } from '@/stores/meeting'
+import { useParticipantStore } from '@/stores/participant'
+import { useAuthStore } from '@/stores/auth'
 import { formatFullDate, formatTime } from '@/lib/dateHelpers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -199,6 +281,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
   AlertCircle,
   Edit,
@@ -210,13 +302,41 @@ import {
   Clock
 } from 'lucide-vue-next'
 import UpdateMeeting from '@/components/UpdateMeeting.vue'
+import type { Participant } from '@/types/participant'
 
 const route = useRoute()
 const router = useRouter()
 const meetingStore = useMeetingStore()
+const participantStore = useParticipantStore()
+const authStore = useAuthStore()
 
 const meeting = computed(() => meetingStore.currentMeeting)
 const showEditMeeting = ref(false)
+const showAddParticipant = ref(false)
+const showRemoveDialog = ref(false)
+const showLeaveDialog = ref(false)
+const participantToRemove = ref<Participant | null>(null)
+
+// Check if current user is the creator
+const isCreator = computed(() => {
+  if (!meeting.value || !authStore.user) return false
+  const creatorId = typeof meeting.value.creator.id === 'string'
+    ? parseInt(meeting.value.creator.id)
+    : meeting.value.creator.id
+  const currentUserId = typeof authStore.user.id === 'string'
+    ? parseInt(authStore.user.id)
+    : authStore.user.id
+  return creatorId === currentUserId
+})
+
+// Check if current user is a participant
+const isParticipant = computed(() => {
+  if (!meeting.value || !authStore.user) return false
+  const currentUserId = typeof authStore.user.id === 'string'
+    ? parseInt(authStore.user.id)
+    : authStore.user.id
+  return meeting.value.participants.some(p => p.userId === currentUserId)
+})
 
 const loadMeeting = async () => {
   const id = parseInt(route.params.id as string)
@@ -241,13 +361,56 @@ const joinMeeting = () => {
   router.push(`/dashboard/meetings/${meeting.value.id}/live`)
 }
 
-const editNotes = () => {
-  // TODO: Open edit notes dialog
-  console.log('Edit notes')
-}
-
 const handleMeetingUpdated = async () => {
   await loadMeeting()
+}
+
+// Creator removes a specific participant
+const handleRemoveParticipant = async (participant: Participant) => {
+  if (!meeting.value || !isCreator.value) return
+
+  participantToRemove.value = participant
+  showRemoveDialog.value = true
+}
+
+const cancelRemove = () => {
+  showRemoveDialog.value = false
+  participantToRemove.value = null
+}
+
+const confirmRemove = async () => {
+  if (!meeting.value || !participantToRemove.value) return
+
+  try {
+    await participantStore.removeParticipant(meeting.value.id, participantToRemove.value.id)
+    showRemoveDialog.value = false
+    participantToRemove.value = null
+    await loadMeeting()
+  } catch (error) {
+    console.error('Failed to remove participant:', error)
+  }
+}
+
+const handleLeaveMeeting = () => {
+  if (!meeting.value || !authStore.user) return
+  showLeaveDialog.value = true
+}
+
+const confirmLeave = async () => {
+  if (!meeting.value || !authStore.user) return
+
+  const currentUserId = typeof authStore.user.id === 'string'
+    ? parseInt(authStore.user.id)
+    : authStore.user.id
+
+  try {
+    await participantStore.leaveAsParticipant(meeting.value.id, currentUserId)
+    showLeaveDialog.value = false
+    router.push('/dashboard/meetings')
+  } catch (error) {
+    console.error('Failed to leave meeting:', error)
+    showLeaveDialog.value = false
+  }
 }
 
 onMounted(() => {
