@@ -134,7 +134,6 @@
         </CardContent>
       </Card>
 
-      <!-- Action Items -->
       <Card>
         <CardHeader>
           <div class="flex items-center justify-between">
@@ -149,15 +148,11 @@
         </CardHeader>
         <CardContent>
           <div class="space-y-3">
-            <div v-for="item in pendingActionItems" :key="item.id" @click="router.push('/dashboard/action-items')"
+            <div v-for="item in pendingActionItems" :key="item.id" @click="router.push(`/dashboard/action-items`)"
               class="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer group">
               <!-- Status Indicator -->
               <div class="mt-1">
-                <div v-if="item.status === 'DONE'"
-                  class="h-4 w-4 rounded-full bg-green-500 flex items-center justify-center">
-                  <CheckCircle2 class="h-3 w-3 text-white" />
-                </div>
-                <div v-else-if="item.status === 'IN_PROGRESS'"
+                <div v-if="item.status === 'IN_PROGRESS'"
                   class="h-4 w-4 rounded-full bg-blue-500 flex items-center justify-center">
                   <Clock class="h-3 w-3 text-white" />
                 </div>
@@ -165,13 +160,11 @@
               </div>
 
               <div class="flex-1 min-w-0">
-                <p class="font-medium" :class="{ 'line-through text-muted-foreground': item.status === 'DONE' }">
-                  {{ item.title }}
-                </p>
+                <p class="font-medium">{{ item.title }}</p>
                 <div class="flex items-center gap-3 mt-1 text-xs">
                   <p class="text-muted-foreground">Due: {{ item.dueDate ? formatDueDate(item.dueDate) : 'No due date' }}
                   </p>
-                  <p class="text-muted-foreground truncate">Meeting ID: {{ item.meetingId }}</p>
+                  <p class="text-muted-foreground truncate">{{ item.meeting.title }}</p>
                 </div>
               </div>
 
@@ -221,23 +214,18 @@ const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const showCreateMeeting = ref(false)
 
-// Computed values
+// Get pending action items from dashboard store
 const pendingActionItems = computed(() => {
-  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return []
-  return dashboardStore.actionItems
-    .filter(item => item.status !== 'DONE')
-    .slice(0, 5)
+  return dashboardStore.data?.actionItems?.pending || []
 })
 
 const pendingActionsCount = computed(() => {
-  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return 0
-  return dashboardStore.actionItems.filter(item => item.status !== 'DONE').length
+  return dashboardStore.data?.actionItems?.pendingCount || 0
 })
 
 const completionRate = computed(() => {
-  if (!dashboardStore.actionItems || !Array.isArray(dashboardStore.actionItems)) return 0
-  const total = dashboardStore.actionItems.length
-  const completed = dashboardStore.actionItems.filter(item => item.status === 'DONE').length
+  const total = dashboardStore.data?.actionItems?.totalCount || 0
+  const completed = dashboardStore.data?.actionItems?.completedCount || 0
   return total > 0 ? Math.round((completed / total) * 100) : 0
 })
 

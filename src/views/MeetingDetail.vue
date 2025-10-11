@@ -112,6 +112,9 @@
               </div>
             </CardContent>
           </Card>
+
+          <!-- Action Items -->
+          <ActionItems :meeting-id="meeting.id" />
         </div>
 
         <div>
@@ -279,12 +282,15 @@ import {
 } from 'lucide-vue-next'
 import UpdateMeeting from '@/components/UpdateMeeting.vue'
 import AddParticipant from '@/components/AddParticipant.vue'
+import ActionItems from '@/components/ActionItems.vue'
+import { useActionItemStore } from '@/stores/actionItem'
 import type { Participant } from '@/types/participant'
 
 const route = useRoute()
 const router = useRouter()
 const meetingStore = useMeetingStore()
 const participantStore = useParticipantStore()
+const actionItemStore = useActionItemStore()
 const authStore = useAuthStore()
 
 const meeting = computed(() => meetingStore.currentMeeting)
@@ -311,6 +317,7 @@ const loadMeeting = async () => {
     return
   }
   await meetingStore.fetchMeetingById(id)
+  await actionItemStore.fetchActionItems(id)
 }
 
 const getInitials = (name: string) => {

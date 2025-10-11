@@ -32,7 +32,8 @@ export const useActionItemStore = defineStore('actionItem', () => {
 
     try {
       const response = await axios.get(`/meetings/${meetingId}/action-items`)
-      actionItems.value = response.data
+      // Backend returns { actionItems: [...] }
+      actionItems.value = response.data.actionItems || response.data
       return response.data
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to fetch action items'
@@ -75,12 +76,14 @@ export const useActionItemStore = defineStore('actionItem', () => {
         data
       )
 
+      const updatedItem = response.data.actionItem || response.data
+
       const index = actionItems.value.findIndex(item => item.id === actionItemId)
       if (index !== -1) {
-        actionItems.value[index] = response.data
+        actionItems.value[index] = updatedItem
       }
 
-      return response.data
+      return updatedItem
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to update action item'
       throw err
