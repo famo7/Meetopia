@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const isInitialized = ref(false)
 
   // Computed
   const isAuthenticated = computed(() => user.value !== null)
@@ -56,20 +57,28 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       await api.post('/auth/logout')
+      user.value = null
+      isInitialized.value = false // Reset on logout
+      router.push('/login')
     } catch (err) {
       console.error('Logout error:', err)
-    } finally {
-      user.value = null
-      router.push('/login')
     }
   }
 
+  // Check if user is authenticated (validates httpOnly cookie)
   const checkAuth = async () => {
+    if (isInitialized.value) return // Only check once
+
+    isLoading.value = true
+    error.value = null
     try {
       const response = await api.get('/auth/me')
       user.value = response.data.user
     } catch (err) {
       user.value = null
+    } finally {
+      isLoading.value = false
+      isInitialized.value = true
     }
   }
 
@@ -82,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     isAuthenticated,
+    isInitialized,
     login,
     register,
     logout,
