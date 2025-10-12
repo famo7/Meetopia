@@ -12,6 +12,7 @@
     "@internationalized/date": "^3.10.0",
     "@tailwindcss/vite": "^4.1.12",
     "@vueuse/core": "^13.9.0",
+    "agora-rtc-sdk-ng": "^4.24.0",
     "appwrite": "^19.0.0",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
