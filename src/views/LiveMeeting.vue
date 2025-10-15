@@ -115,6 +115,23 @@
           <p class="mt-2 text-sm text-gray-500">This may take a few moments</p>
         </div>
 
+        <!-- Device Warning -->
+        <div v-if="agoraClient && (!localAudioTrack && !localVideoTrack)"
+          class="absolute top-4 left-4 bg-yellow-500/90 backdrop-blur-sm px-4 py-3 rounded-lg text-yellow-900 max-w-sm z-30">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <div>
+              <p class="text-sm font-medium">No Camera/Microphone Found</p>
+              <p class="text-xs opacity-90">Please connect devices and refresh to enable video/audio</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Empty State (No Remote Users) -->
         <div v-if="agoraClient && remoteUsers.size === 0"
           class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
@@ -145,7 +162,7 @@
             <!-- Editor Content -->
             <div class="p-6">
               <Textarea ref="textareaRef" v-model="notes" @input="handleNotesUpdate"
-                class="min-h-[400px] text-gray-900 font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                class="min-h-[500px] text-gray-900 font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="Start taking notes... Everyone in the meeting can see and edit these notes in real-time." />
 
               <!-- Live Cursors Indicator -->
@@ -163,14 +180,9 @@
                 </span>
               </div>
             </div>
-
-            <!-- Action Items Manager -->
-            <ActionItemManager
-              :meeting-id="parseInt(route.params.id as string)"
-              ref="actionItemManagerRef"
-            />
           </div>
 
+          <!-- Auto-save indicator -->
           <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
             <div class="flex items-center gap-2">
               <div v-if="isSaving" class="flex items-center gap-2">
@@ -186,6 +198,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Participants Sidebar -->
       <div class="w-80 bg-gray-800 border-l border-gray-700 flex-shrink-0 overflow-y-auto">
         <div class="p-6">
           <h3 class="text-sm font-semibold mb-4 text-gray-100">
@@ -214,6 +228,7 @@
             </div>
           </div>
 
+          <!-- Empty State -->
           <div v-if="connectedUsers.length === 0" class="text-center py-8">
             <Users class="h-12 w-12 mx-auto mb-3 text-gray-600" />
             <p class="text-sm text-gray-400">Connecting...</p>
@@ -241,7 +256,6 @@ import type {
   ILocalVideoTrack
 } from 'agora-rtc-sdk-ng'
 import axios from '@/lib/axios'
-import ActionItemManager from '@/components/ActionItemManager.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -260,7 +274,6 @@ const lastSaved = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const isReceivingUpdate = ref(false)
 const currentLayout = ref<'split' | 'fullscreen'>('split')
-const actionItemManagerRef = ref<InstanceType<typeof ActionItemManager> | null>(null)
 
 const currentUserId = computed(() => {
   const id = authStore.user?.id
@@ -456,19 +469,66 @@ const initAgora = async () => {
 
     console.log('✅ Joined Agora channel:', data.channelName, 'with UID:', uid)
 
-    localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
-    localVideoTrack = await AgoraRTC.createCameraVideoTrack()
+    // Check available devices first
+    const devices = await AgoraRTC.getDevices()
+    console.log('📱 Available devices:', devices)
 
-    const localContainer = document.getElementById('local-video')
-    if (localContainer) {
-      localVideoTrack.play(localContainer)
+    const hasMicrophone = devices.some(device => device.kind === 'audioinput')
+    const hasCamera = devices.some(device => device.kind === 'videoinput')
+
+    // Try to create audio track if microphone is available
+    if (hasMicrophone) {
+      try {
+        localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
+        console.log('✅ Microphone track created')
+      } catch (micError) {
+        console.warn('⚠️ Failed to create microphone track:', micError)
+        // Continue without audio
+      }
+    } else {
+      console.warn('⚠️ No microphone devices found')
+      // Show audio as disabled
+      isAudioEnabled.value = false
     }
 
-    await agoraClient.publish([localAudioTrack, localVideoTrack])
-    console.log('✅ Published local audio and video')
+    // Try to create video track if camera is available
+    if (hasCamera) {
+      try {
+        localVideoTrack = await AgoraRTC.createCameraVideoTrack()
+        console.log('✅ Camera track created')
+
+        const localContainer = document.getElementById('local-video')
+        if (localContainer) {
+          localVideoTrack.play(localContainer)
+        }
+      } catch (cameraError) {
+        console.warn('⚠️ Failed to create camera track:', cameraError)
+        // Show camera off overlay
+        showCameraOffOverlay('local-video', authStore.user!.name)
+        isVideoEnabled.value = false
+      }
+    } else {
+      console.warn('⚠️ No camera devices found')
+      showCameraOffOverlay('local-video', authStore.user!.name)
+      isVideoEnabled.value = false
+    }
+
+    // Publish available tracks
+    const tracksToPublish = []
+    if (localAudioTrack) tracksToPublish.push(localAudioTrack)
+    if (localVideoTrack) tracksToPublish.push(localVideoTrack)
+
+    if (tracksToPublish.length > 0) {
+      await agoraClient.publish(tracksToPublish)
+      console.log(`✅ Published ${tracksToPublish.length} track(s)`)
+    } else {
+      console.warn('⚠️ No tracks to publish - joining without audio/video')
+    }
 
   } catch (error) {
-    console.error('Failed to initialize Agora:', error)
+    console.error('❌ Failed to initialize Agora:', error)
+    // Show error to user or provide fallback
+    throw error
   }
 }
 
@@ -543,8 +603,7 @@ const initSocket = () => {
       color: data.color,
       lastActivity: new Date()
     })
-
-      })
+  })
 
   socket.on('user-left', (data: { socketId: string; userName: string }) => {
     connectedUsers.value = connectedUsers.value.filter(u => u.socketId !== data.socketId)
@@ -563,8 +622,7 @@ const initSocket = () => {
       myself,
       ...users.map(u => ({ ...u, lastActivity: new Date() }))
     ]
-
-      })
+  })
 
   socket.on('notes-updated', (data: { userId: number; content: string; userName: string }) => {
     if (data.userId !== currentUserId.value) {
