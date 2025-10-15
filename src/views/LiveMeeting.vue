@@ -145,7 +145,7 @@
             <!-- Editor Content -->
             <div class="p-6">
               <Textarea ref="textareaRef" v-model="notes" @input="handleNotesUpdate"
-                class="min-h-[500px] text-gray-900 font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                class="min-h-[400px] text-gray-900 font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="Start taking notes... Everyone in the meeting can see and edit these notes in real-time." />
 
               <!-- Live Cursors Indicator -->
@@ -163,9 +163,14 @@
                 </span>
               </div>
             </div>
+
+            <!-- Action Items Manager -->
+            <ActionItemManager
+              :meeting-id="parseInt(route.params.id as string)"
+              ref="actionItemManagerRef"
+            />
           </div>
 
-          <!-- Auto-save indicator -->
           <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
             <div class="flex items-center gap-2">
               <div v-if="isSaving" class="flex items-center gap-2">
@@ -181,8 +186,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Participants Sidebar -->
       <div class="w-80 bg-gray-800 border-l border-gray-700 flex-shrink-0 overflow-y-auto">
         <div class="p-6">
           <h3 class="text-sm font-semibold mb-4 text-gray-100">
@@ -211,7 +214,6 @@
             </div>
           </div>
 
-          <!-- Empty State -->
           <div v-if="connectedUsers.length === 0" class="text-center py-8">
             <Users class="h-12 w-12 mx-auto mb-3 text-gray-600" />
             <p class="text-sm text-gray-400">Connecting...</p>
@@ -239,6 +241,7 @@ import type {
   ILocalVideoTrack
 } from 'agora-rtc-sdk-ng'
 import axios from '@/lib/axios'
+import ActionItemManager from '@/components/ActionItemManager.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -257,6 +260,7 @@ const lastSaved = ref('')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const isReceivingUpdate = ref(false)
 const currentLayout = ref<'split' | 'fullscreen'>('split')
+const actionItemManagerRef = ref<InstanceType<typeof ActionItemManager> | null>(null)
 
 const currentUserId = computed(() => {
   const id = authStore.user?.id
@@ -539,7 +543,8 @@ const initSocket = () => {
       color: data.color,
       lastActivity: new Date()
     })
-  })
+
+      })
 
   socket.on('user-left', (data: { socketId: string; userName: string }) => {
     connectedUsers.value = connectedUsers.value.filter(u => u.socketId !== data.socketId)
@@ -558,7 +563,8 @@ const initSocket = () => {
       myself,
       ...users.map(u => ({ ...u, lastActivity: new Date() }))
     ]
-  })
+
+      })
 
   socket.on('notes-updated', (data: { userId: number; content: string; userName: string }) => {
     if (data.userId !== currentUserId.value) {

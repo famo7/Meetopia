@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ListboxItemEmits, ListboxItemProps } from "reka-ui"
+import type { ListboxItemEmits, ListboxItemProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit, useCurrentElement } from "@vueuse/core"
-import { ListboxItem, useForwardPropsEmits, useId } from "reka-ui"
+import { ListboxItem, useForwardPropsEmits, useId } from "radix-vue"
 import { computed, onMounted, onUnmounted, ref } from "vue"
 import { cn } from "@/lib/utils"
 import { useCommand, useCommandGroup } from "."

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AlertDialogTriggerProps } from "reka-ui"
-import { AlertDialogTrigger } from "reka-ui"
+import type { AlertDialogTriggerProps } from "radix-vue"
+import { AlertDialogTrigger } from "radix-vue"
 
 const props = defineProps<AlertDialogTriggerProps>()
 </script>

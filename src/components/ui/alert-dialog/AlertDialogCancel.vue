@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { AlertDialogCancelProps } from "reka-ui"
+import type { AlertDialogCancelProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { AlertDialogCancel } from "reka-ui"
+import { AlertDialogCancel } from "radix-vue"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from '@/components/ui/button'
 

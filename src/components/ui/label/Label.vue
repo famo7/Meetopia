@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { LabelProps } from "reka-ui"
+import type { LabelProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { Label } from "reka-ui"
+import { Label } from "radix-vue"
 import { cn } from "@/lib/utils"
 
 const props = defineProps<LabelProps & { class?: HTMLAttributes["class"] }>()

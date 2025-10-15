@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DialogContentEmits, DialogContentProps } from "reka-ui"
+import type { DialogContentEmits, DialogContentProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
 import { X } from "lucide-vue-next"
@@ -9,7 +9,7 @@ import {
 
   DialogPortal,
   useForwardPropsEmits,
-} from "reka-ui"
+} from "radix-vue"
 import { cn } from "@/lib/utils"
 import SheetOverlay from "./SheetOverlay.vue"
 

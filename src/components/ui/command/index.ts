@@ -1,5 +1,5 @@
 import type { Ref } from "vue"
-import { createContext } from "reka-ui"
+import { createContext } from "radix-vue"
 
 export { default as Command } from "./Command.vue"
 export { default as CommandDialog } from "./CommandDialog.vue"

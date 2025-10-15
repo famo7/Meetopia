@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AlertDialogContentEmits, AlertDialogContentProps } from "reka-ui"
+import type { AlertDialogContentEmits, AlertDialogContentProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
 import {
@@ -8,7 +8,7 @@ import {
   AlertDialogOverlay,
   AlertDialogPortal,
   useForwardPropsEmits,
-} from "reka-ui"
+} from "radix-vue"
 import { cn } from "@/lib/utils"
 
 const props = defineProps<AlertDialogContentProps & { class?: HTMLAttributes["class"] }>()

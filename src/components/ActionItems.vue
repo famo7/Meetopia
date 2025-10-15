@@ -59,7 +59,7 @@
 
           <!-- Priority Badge -->
           <Badge v-if="item.priority" :variant="item.priority === 'HIGH' ? 'destructive' :
-              item.priority === 'MEDIUM' ? 'default' : 'secondary'
+            item.priority === 'MEDIUM' ? 'default' : 'secondary'
             " class="text-xs">
             {{ item.priority }}
           </Badge>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PopoverContentEmits, PopoverContentProps } from "reka-ui"
+import type { PopoverContentEmits, PopoverContentProps } from "radix-vue"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
 import {
@@ -7,7 +7,7 @@ import {
 
   PopoverPortal,
   useForwardPropsEmits,
-} from "reka-ui"
+} from "radix-vue"
 import { cn } from "@/lib/utils"
 
 defineOptions({
