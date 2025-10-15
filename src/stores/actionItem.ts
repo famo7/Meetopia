@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from '@/lib/axios'
+import api from '@/lib/axios'
 import type { ActionItem } from '@/types/actionItem'
 
 interface CreateActionItemRequest {
@@ -31,7 +31,7 @@ export const useActionItemStore = defineStore('actionItem', () => {
     error.value = null
 
     try {
-      const response = await axios.get(`/meetings/${meetingId}/action-items`)
+      const response = await api.get(`/meetings/${meetingId}/action-items`)
       // Backend returns { actionItems: [...] }
       actionItems.value = response.data.actionItems || response.data
       return response.data
@@ -48,7 +48,7 @@ export const useActionItemStore = defineStore('actionItem', () => {
     error.value = null
 
     try {
-      const response = await axios.post(`/meetings/${meetingId}/action-items`, data)
+      const response = await api.post(`/meetings/${meetingId}/action-items`, data)
 
       actionItems.value.unshift(response.data)
 
@@ -71,7 +71,7 @@ export const useActionItemStore = defineStore('actionItem', () => {
     error.value = null
 
     try {
-      const response = await axios.put(
+      const response = await api.put(
         `/meetings/${meetingId}/action-items/${actionItemId}`,
         data
       )
@@ -98,7 +98,7 @@ export const useActionItemStore = defineStore('actionItem', () => {
     error.value = null
 
     try {
-      await axios.delete(`/meetings/${meetingId}/action-items/${actionItemId}`)
+      await api.delete(`/meetings/${meetingId}/action-items/${actionItemId}`)
 
       actionItems.value = actionItems.value.filter(item => item.id !== actionItemId)
     } catch (err: any) {

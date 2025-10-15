@@ -1,133 +1,147 @@
 <template>
   <!-- Modal Backdrop -->
-  <div v-if="props.isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <!-- Backdrop -->
-    <div class="fixed inset-0 bg-black/50" @click="closeModal"></div>
+  <Transition name="backdrop" appear>
+    <div v-if="props.isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      @click="handleBackdropClick">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/50"></div>
 
-    <!-- Modal Card -->
-    <Card class="relative z-50 w-full max-w-md">
-      <!-- Header -->
-      <CardHeader>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <UserPlus class="h-4 w-4 text-primary" />
+      <!-- Modal Card -->
+      <Transition name="modal" appear>
+        <Card class="relative z-50 w-full max-w-md mx-auto shadow-lg" @click.stop>
+          <!-- Header -->
+          <CardHeader class="pb-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <UserPlus class="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle class="text-lg font-semibold">Add Participant</CardTitle>
+                  <CardDescription class="text-sm">
+                    Search and add a participant to this meeting
+                  </CardDescription>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" @click="closeModal" :disabled="isLoading">
+                <X class="h-4 w-4" />
+              </Button>
             </div>
-            <CardTitle>Add Participant</CardTitle>
-          </div>
-          <Button variant="ghost" size="sm" @click="closeModal" :disabled="isLoading">
-            <X class="h-4 w-4" />
-          </Button>
-        </div>
-        <CardDescription>Search and add a participant to this meeting</CardDescription>
-      </CardHeader>
+          </CardHeader>
 
-      <!-- Content -->
-      <CardContent class="space-y-4">
-        <!-- Search Input -->
-        <div class="space-y-2">
-          <Label for="search">Search by name or email</Label>
-          <div class="relative">
-            <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input id="search" v-model="searchQuery" placeholder="Type to search..." class="pl-9" :disabled="isLoading"
-              @input="handleSearch" />
-          </div>
-        </div>
+          <!-- Content -->
+          <CardContent class="space-y-4">
+            <!-- Search Input -->
+            <div class="space-y-2">
+              <Label for="search">Search by name or email</Label>
+              <div class="relative">
+                <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="search" v-model="searchQuery" placeholder="Type to search..." class="pl-9 pr-8"
+                  :disabled="isLoading || isSearching" @input="handleSearch" />
+                <!-- Clear button -->
+                <button v-if="searchQuery" @click="clearSearch"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-md hover:bg-muted flex items-center justify-center transition-colors">
+                  <X class="h-3 w-3 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
 
-        <!-- Loading State -->
-        <div v-if="searchQuery.length > 0 && filteredUsers.length === 0" class="flex items-center justify-center py-8">
-          <UserX class="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <p class="text-sm text-gray-500">No available users found</p>
-        </div>
-
-        <!-- Search Results -->
-        <div v-else-if="searchQuery.length > 0" class="space-y-2">
-          <p class="text-xs text-gray-500 mb-2">
-            {{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'person' : 'people' }} found
-          </p>
-
-          <!-- User List -->
-          <div class="max-h-64 overflow-y-auto space-y-1 border rounded-lg p-2">
-            <button v-for="user in filteredUsers" :key="user.id" @click="selectUser(user)" :disabled="isLoading"
-              class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors text-left disabled:opacity-50">
-              <!-- Avatar -->
-              <div
-                class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center flex-shrink-0">
-                <span class="text-sm font-semibold text-white">
-                  {{ getInitials(user.name) }}
+            <!-- Search Results -->
+            <div v-if="searchQuery.length > 0" class="space-y-3">
+              <!-- Status indicator -->
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">
+                  {{ isSearching ? 'Searching...' : `${filteredUsers.length} found` }}
                 </span>
+                <Loader2 v-if="isSearching" class="h-3 w-3 animate-spin text-muted-foreground" />
               </div>
 
-              <!-- User Info -->
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ user.name }}</p>
-                <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+              <!-- Loading State -->
+              <div v-if="isSearching" class="flex items-center justify-center py-8">
+                <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
 
-              <!-- Selected indicator -->
-              <Check v-if="selectedUser?.id === user.id" class="h-4 w-4 text-primary flex-shrink-0" />
-            </button>
+              <!-- No Results -->
+              <div v-else-if="filteredUsers.length === 0" class="text-center py-8">
+                <UserX class="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p class="text-sm text-muted-foreground">No users found</p>
+              </div>
 
-            <!-- Empty state -->
-            <div v-if="filteredUsers.length === 0" class="text-center py-8">
-              <UserX class="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <p class="text-sm text-gray-500">No users found</p>
-              <p class="text-xs text-gray-400">Try a different search term</p>
+              <!-- User List -->
+              <div v-else class="space-y-1">
+                <div class="max-h-64 overflow-y-auto space-y-1">
+                  <button v-for="user in filteredUsers" :key="user.id" @click="selectUser(user)" :disabled="isLoading"
+                    class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left disabled:opacity-50"
+                    :class="{
+                      'bg-primary/10 border border-primary/20': selectedUser?.id === user.id
+                    }">
+                    <!-- Avatar -->
+                    <div
+                      class="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 text-sm font-medium">
+                      {{ getInitials(user.name) }}
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium">{{ user.name }}</p>
+                      <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
+                    </div>
+
+                    <!-- Selected indicator -->
+                    <Check v-if="selectedUser?.id === user.id" class="h-4 w-4 text-primary flex-shrink-0" />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Initial State -->
-        <div v-else class="text-center py-8">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
-            <Search class="h-6 w-6 text-gray-400" />
-          </div>
-          <p class="text-sm text-gray-500">Start typing to search for users</p>
-        </div>
-
-        <!-- Selected User Preview -->
-        <div v-if="selectedUser" class="p-3 rounded-lg bg-blue-50 border border-blue-200">
-          <div class="flex items-center gap-3">
-            <div
-              class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center flex-shrink-0">
-              <span class="text-sm font-semibold text-white">
-                {{ getInitials(selectedUser.name) }}
-              </span>
+            <!-- Initial State -->
+            <div v-else class="text-center py-8">
+              <Search class="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p class="text-sm text-muted-foreground">Start typing to search for users</p>
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900">{{ selectedUser.name }}</p>
-              <p class="text-xs text-gray-500">{{ selectedUser.email }}</p>
+
+            <!-- Selected User Preview -->
+            <div v-if="selectedUser" class="p-3 rounded-lg bg-muted/50 border">
+              <div class="flex items-center gap-3">
+                <div
+                  class="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 text-sm font-medium">
+                  {{ getInitials(selectedUser.name) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">{{ selectedUser.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ selectedUser.email }}</p>
+                </div>
+                <button @click="clearSelection" class="text-muted-foreground hover:text-foreground">
+                  <X class="h-4 w-4" />
+                </button>
+              </div>
             </div>
-            <button @click="clearSelection" class="text-gray-400 hover:text-gray-600">
-              <X class="h-4 w-4" />
-            </button>
-          </div>
-        </div>
 
-        <!-- Error Message -->
-        <div v-if="error" class="p-3 rounded-lg bg-red-50 border border-red-200">
-          <p class="text-sm text-red-600">{{ error }}</p>
-        </div>
-      </CardContent>
+            <!-- Error Message -->
+            <div v-if="error" class="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+              <p class="text-sm text-destructive">{{ error }}</p>
+            </div>
+          </CardContent>
 
-      <!-- Footer -->
-      <CardFooter class="flex justify-end gap-2">
-        <Button variant="outline" @click="closeModal" :disabled="isLoading">
-          Cancel
-        </Button>
-        <Button @click="handleSubmit" :disabled="!selectedUser || isLoading">
-          <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ isLoading ? 'Adding...' : 'Add Participant' }}
-        </Button>
-      </CardFooter>
-    </Card>
-  </div>
+          <!-- Footer -->
+          <CardFooter class="flex justify-end gap-2">
+            <Button variant="outline" @click="closeModal" :disabled="isLoading">
+              Cancel
+            </Button>
+            <Button @click="handleSubmit" :disabled="!selectedUser || isLoading">
+              <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isLoading ? 'Adding...' : 'Add Participant' }}
+            </Button>
+          </CardFooter>
+        </Card>
+      </Transition>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useParticipantStore } from '@/stores/participant'
-import { useMeetingStore } from '@/stores/meeting'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -158,84 +172,49 @@ const emit = defineEmits<{
 }>()
 
 const participantStore = useParticipantStore()
-const meetingStore = useMeetingStore()
 
 const searchQuery = ref('')
 const selectedUser = ref<User | null>(null)
 const isLoading = ref(false)
 const error = ref('')
+const searchResults = ref<User[]>([])
+const isSearching = ref(false)
 
 let searchTimeout: number | undefined
 
-const currentMeeting = computed(() =>
-  meetingStore.meetings.find(m => m.id === props.meetingId) || meetingStore.currentMeeting
-)
-
-
-const allKnownUsers = computed(() => {
-  const usersMap = new Map<number, User>()
-
-  meetingStore.meetings.forEach(meeting => {
-    if (!usersMap.has(meeting.creator.id)) {
-      usersMap.set(meeting.creator.id, {
-        id: meeting.creator.id,
-        name: meeting.creator.name,
-        email: meeting.creator.email
-      })
-    }
-
-    meeting.participants?.forEach(p => {
-      if (!usersMap.has(p.user.id)) {
-        usersMap.set(p.user.id, {
-          id: p.user.id,
-          name: p.user.name,
-          email: p.user.email
-        })
-      }
-    })
-  })
-
-  return Array.from(usersMap.values())
-})
-
-const existingParticipantIds = computed(() => {
-  if (!currentMeeting.value) return new Set<number>()
-
-  const ids = new Set<number>()
-
-  ids.add(currentMeeting.value.creator.id)
-
-  currentMeeting.value.participants?.forEach(p => {
-    ids.add(p.user.id)
-  })
-
-  return ids
-})
-
-const availableUsers = computed(() => {
-  return allKnownUsers.value.filter(user =>
-    !existingParticipantIds.value.has(user.id)
-  )
-})
-
 const filteredUsers = computed(() => {
-  if (searchQuery.value.length === 0) return []
-
-  const query = searchQuery.value.toLowerCase()
-  return availableUsers.value.filter(user =>
-    user.name.toLowerCase().includes(query) ||
-    user.email.toLowerCase().includes(query)
-  )
+  return searchResults.value
 })
 
-const handleSearch = () => {
+const handleSearch = async () => {
   clearTimeout(searchTimeout)
 
   if (searchQuery.value.length === 0) {
+    searchResults.value = []
+    isSearching.value = false
     return
   }
 
-  searchTimeout = setTimeout(() => {
+  searchTimeout = setTimeout(async () => {
+    try {
+      isSearching.value = true
+      error.value = ''
+      console.log('Searching for:', searchQuery.value)
+      const results = await participantStore.searchParticipants(
+        props.meetingId,
+        searchQuery.value,
+        10
+      )
+      console.log('Search results:', results)
+      console.log('Meeting ID:', props.meetingId)
+      searchResults.value = results.users || []
+    } catch (err: any) {
+      console.error('Search error:', err)
+      error.value = err.response?.data?.message || 'Failed to search users'
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
   }, 300)
 }
 
@@ -249,6 +228,7 @@ const clearSelection = () => {
 }
 
 const getInitials = (name: string) => {
+  if (!name) return '?'
   return name
     .split(' ')
     .map(n => n[0])
@@ -284,6 +264,18 @@ const resetForm = () => {
   searchQuery.value = ''
   selectedUser.value = null
   error.value = ''
+  searchResults.value = []
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+  searchResults.value = []
+}
+
+const handleBackdropClick = () => {
+  if (!isLoading.value) {
+    closeModal()
+  }
 }
 
 const closeModal = () => {

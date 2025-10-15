@@ -91,6 +91,7 @@
                 <Monitor v-else class="h-5 w-5" />
               </button>
 
+
               <!-- Divider -->
               <div class="w-px h-10 bg-gray-600"></div>
 
@@ -301,15 +302,21 @@ const isAudioEnabled = ref(true)
 const isVideoEnabled = ref(true)
 const isScreenSharing = ref(false)
 
+
 const toggleAudio = async () => {
   if (!localAudioTrack) return
 
-  if (isAudioEnabled.value) {
-    await localAudioTrack.setEnabled(false)
-    isAudioEnabled.value = false
-  } else {
-    await localAudioTrack.setEnabled(true)
-    isAudioEnabled.value = true
+  try {
+    if (isAudioEnabled.value) {
+      await localAudioTrack.setEnabled(false)
+      isAudioEnabled.value = false
+    } else {
+      await localAudioTrack.setEnabled(true)
+      isAudioEnabled.value = true
+    }
+  } catch (error) {
+    // Revert state on error
+    isAudioEnabled.value = !isAudioEnabled.value
   }
 }
 
@@ -401,7 +408,7 @@ const toggleScreenShare = async () => {
       })
     }
   } catch (error) {
-    console.error('Error toggling screen share:', error)
+    // Silently handle screen share errors
   }
 }
 
@@ -464,55 +471,47 @@ const initAgora = async () => {
       }
     })
 
-    const uid = await agoraClient.join(
+    await agoraClient.join(
       data.appId,
       data.channelName,
       data.token,
       currentUserId.value
     )
 
-    console.log('✅ Joined Agora channel:', data.channelName, 'with UID:', uid)
-
-    // Check available devices first
+    // Check available devices
     const devices = await AgoraRTC.getDevices()
-    console.log('📱 Available devices:', devices)
+    const audioDevices = devices.filter(device => device.kind === 'audioinput')
+    const videoDevices = devices.filter(device => device.kind === 'videoinput')
 
-    const hasMicrophone = devices.some(device => device.kind === 'audioinput')
-    const hasCamera = devices.some(device => device.kind === 'videoinput')
+    const hasMicrophone = audioDevices.length > 0
+    const hasCamera = videoDevices.length > 0
 
-    // Try to create audio track if microphone is available
+    // Create audio track if microphone is available
     if (hasMicrophone) {
       try {
         localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
-        console.log('✅ Microphone track created')
+        isAudioEnabled.value = true
       } catch (micError) {
-        console.warn('⚠️ Failed to create microphone track:', micError)
-        // Continue without audio
+        isAudioEnabled.value = false
       }
     } else {
-      console.warn('⚠️ No microphone devices found')
-      // Show audio as disabled
       isAudioEnabled.value = false
     }
 
-    // Try to create video track if camera is available
+    // Create video track if camera is available
     if (hasCamera) {
       try {
         localVideoTrack = await AgoraRTC.createCameraVideoTrack()
-        console.log('✅ Camera track created')
 
         const localContainer = document.getElementById('local-video')
         if (localContainer) {
           localVideoTrack.play(localContainer)
         }
       } catch (cameraError) {
-        console.warn('⚠️ Failed to create camera track:', cameraError)
-        // Show camera off overlay
         showCameraOffOverlay('local-video', authStore.user!.name)
         isVideoEnabled.value = false
       }
     } else {
-      console.warn('⚠️ No camera devices found')
       showCameraOffOverlay('local-video', authStore.user!.name)
       isVideoEnabled.value = false
     }
@@ -524,14 +523,9 @@ const initAgora = async () => {
 
     if (tracksToPublish.length > 0) {
       await agoraClient.publish(tracksToPublish)
-      console.log(`✅ Published ${tracksToPublish.length} track(s)`)
-    } else {
-      console.warn('⚠️ No tracks to publish - joining without audio/video')
     }
 
   } catch (error) {
-    console.error('❌ Failed to initialize Agora:', error)
-    // Show error to user or provide fallback
     throw error
   }
 }
@@ -554,10 +548,8 @@ const disconnectAgora = async () => {
     }
 
     remoteUsers.value.clear()
-
-    console.log('✅ Disconnected from Agora')
   } catch (error) {
-    console.error('Error disconnecting Agora:', error)
+    // Silently handle disconnect errors
   }
 }
 
@@ -591,12 +583,12 @@ const initSocket = () => {
   socket.on('disconnect', () => {
   })
 
-  socket.on('connect_error', (error: Error) => {
-    console.error('Socket connection error:', error)
+  socket.on('connect_error', () => {
+    // Silently handle connection errors
   })
 
-  socket.on('error', (data: { message: string }) => {
-    console.error('Socket error:', data.message)
+  socket.on('error', () => {
+    // Silently handle socket errors
   })
 
   socket.on('user-joined', (data: { socketId: string; userId: number; userName: string; color: string }) => {
@@ -702,7 +694,6 @@ const handleNotesUpdate = () => {
         lastSaved.value = ''
       }, 3000)
     } catch (error) {
-      console.error('Error saving notes:', error)
     } finally {
       isSaving.value = false
     }

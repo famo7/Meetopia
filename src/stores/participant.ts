@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from '@/lib/axios'
+import api from '@/lib/axios'
 import type { Participant } from '@/types/participant'
 
 interface AddParticipantRequest {
@@ -19,7 +19,7 @@ export const useParticipantStore = defineStore('participant', () => {
     error.value = null
 
     try {
-      const response = await axios.get(`/meetings/${meetingId}`)
+      const response = await api.get(`/meetings/${meetingId}`)
       participants.value = response.data.participants || []
       return response.data.participants
     } catch (err: any) {
@@ -35,7 +35,7 @@ export const useParticipantStore = defineStore('participant', () => {
     error.value = null
 
     try {
-      const response = await axios.post(`/meetings/${meetingId}/participants`, data)
+      const response = await api.post(`/meetings/${meetingId}/participants`, data)
 
       participants.value.push(response.data)
 
@@ -53,7 +53,7 @@ export const useParticipantStore = defineStore('participant', () => {
     error.value = null
 
     try {
-      await axios.delete(`/meetings/${meetingId}/participants/${participantId}`)
+      await api.delete(`/meetings/${meetingId}/participants/${participantId}`)
 
       // Remove from local state
       participants.value = participants.value.filter(p => p.id !== participantId)
@@ -71,7 +71,7 @@ export const useParticipantStore = defineStore('participant', () => {
     error.value = null
 
     try {
-      await axios.delete(`/meetings/${meetingId}/participants/me`)
+      await api.delete(`/meetings/${meetingId}/participants/me`)
 
       participants.value = participants.value.filter(p => p.userId !== currentUserId)
     } catch (err: any) {
@@ -79,6 +79,18 @@ export const useParticipantStore = defineStore('participant', () => {
       throw err
     } finally {
       isLoading.value = false
+    }
+  }
+
+  const searchParticipants = async (meetingId: number, query: string, limit: number = 10) => {
+    try {
+      const response = await api.get(`/meetings/${meetingId}/participants/search`, {
+        params: { query, limit }
+      })
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to search participants'
+      throw err
     }
   }
 
@@ -98,6 +110,7 @@ export const useParticipantStore = defineStore('participant', () => {
     addParticipant,
     removeParticipant,
     leaveAsParticipant,
+    searchParticipants,
     resetStore
   }
 })
