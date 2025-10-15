@@ -142,7 +142,8 @@
 
       <!-- Collaborative Editor -->
       <div v-if="currentLayout === 'split'" class="w-1/2 overflow-y-auto border-l border-gray-700">
-        <div class="p-8">
+        <div class="p-8 space-y-6">
+          <!-- Meeting Notes -->
           <div class="bg-white rounded-lg shadow-lg min-h-[600px]">
             <!-- Editor Header -->
             <div class="border-b border-gray-200 px-6 py-4">
@@ -181,7 +182,6 @@
               </div>
             </div>
           </div>
-
           <!-- Auto-save indicator -->
           <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
             <div class="flex items-center gap-2">
@@ -196,6 +196,9 @@
             </div>
             <span class="text-gray-500">{{ notes.length }} characters</span>
           </div>
+
+          <!-- Action Items -->
+          <ActionItemManager :meeting-id="parseInt(route.params.id as string)" />
         </div>
       </div>
 
@@ -248,6 +251,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Users, LogOut, Check, Video, FileText, Mic, MicOff, VideoOff, Monitor, MonitorOff, PhoneOff } from 'lucide-vue-next'
+import ActionItemManager from '@/components/ActionItemManager.vue'
 import { io, Socket } from 'socket.io-client'
 import AgoraRTC from 'agora-rtc-sdk-ng'
 import type {
