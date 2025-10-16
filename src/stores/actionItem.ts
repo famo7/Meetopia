@@ -1,24 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/lib/axios'
-import type { ActionItem } from '@/types/actionItem'
+import type { ActionItem, CreateActionItemRequest, UpdateActionItemRequest } from '@/types/actionItem'
 
-interface CreateActionItemRequest {
-  title: string
-  description?: string
-  assignedToId: number
-  dueDate?: string
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH'
-}
-
-interface UpdateActionItemRequest {
-  title?: string
-  description?: string
-  status?: 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED'
-  assignedToId?: number
-  dueDate?: string
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH'
-}
 
 export const useActionItemStore = defineStore('actionItem', () => {
   const actionItems = ref<ActionItem[]>([])

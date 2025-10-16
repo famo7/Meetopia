@@ -7,7 +7,6 @@ export interface ActionItem {
   id: number
   title: string
   description: string
-  isCompleted: boolean
   status: ActionItemStatus
   priority: Priority
   dueDate: string | null
@@ -22,18 +21,18 @@ export interface ActionItem {
 
 export interface CreateActionItemRequest {
   title: string
-  description: string
-  priority: Priority
-  dueDate?: string
-  assignedToId: number
-  meetingId: number
+  description?: string
+  assignedToId?: number
+  status?: ActionItemStatus
+  priority?: Priority
+  dueDate?: string | Date
 }
 
 export interface UpdateActionItemRequest {
   title?: string
   description?: string
+  assignedToId?: number
   status?: ActionItemStatus
   priority?: Priority
-  dueDate?: string
-  isCompleted?: boolean
+  dueDate?: string | Date | null
 }
