@@ -3,12 +3,12 @@
     <!-- Header -->
     <div
       class="px-6 py-4 flex items-center justify-between cursor-pointer group hover:bg-slate-50/80 transition-all duration-300"
-      @click="toggleExpanded"
-    >
+      @click="toggleExpanded">
       <div class="flex items-center gap-3">
         <div class="relative">
           <CheckSquare class="h-5 w-5 text-slate-600 group-hover:text-slate-700 transition-colors" />
-          <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm" v-if="hasCompletedItems"></div>
+          <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm"
+            v-if="hasCompletedItems"></div>
         </div>
         <h3 class="text-lg font-semibold text-slate-800">Action Items</h3>
         <div class="flex items-center gap-1.5">
@@ -22,10 +22,8 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button
-          @click.stop="openCreateDialog"
-          class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors duration-200 hover:shadow-md"
-        >
+        <button @click.stop="openCreateDialog"
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors duration-200 hover:shadow-md">
           <Plus class="h-4 w-4" />
           <span class="hidden sm:inline">Add</span>
         </button>
@@ -36,33 +34,23 @@
     </div>
 
     <!-- Expandable Content -->
-    <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-200 ease-in"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-2"
-    >
+    <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0" leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
       <div v-show="isExpanded" class="border-t border-slate-100">
         <!-- Action Items List -->
         <div v-if="actionItems.length > 0" class="p-4 space-y-2">
-          <div
-            v-for="item in sortedActionItems"
-            :key="item.id"
-            class="group bg-white rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:shadow-md transition-all duration-200"
-          >
+          <div v-for="item in sortedActionItems" :key="item.id"
+            class="group bg-white rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:shadow-md transition-all duration-200">
             <div class="flex items-start gap-3">
               <!-- Status Checkbox -->
-              <button
-                @click="toggleItemStatus(item)"
+              <button @click="toggleItemStatus(item)"
                 class="mt-0.5 flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all duration-200"
                 :class="[
                   item.status === 'DONE'
                     ? 'bg-emerald-500 border-emerald-500 text-white'
                     : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50',
-                ]"
-              >
+                ]">
                 <Check v-if="item.status === 'DONE'" class="h-3 w-3" />
               </button>
 
@@ -70,7 +58,8 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-2">
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-medium text-slate-800 text-sm leading-tight" :class="item.status === 'DONE' ? 'line-through opacity-60' : ''">
+                    <h4 class="font-medium text-slate-800 text-sm leading-tight"
+                      :class="item.status === 'DONE' ? 'line-through opacity-60' : ''">
                       {{ item.title }}
                     </h4>
                     <p v-if="item.description" class="text-slate-500 mt-1 text-xs leading-relaxed line-clamp-2">
@@ -79,10 +68,8 @@
                   </div>
 
                   <!-- Priority Badge -->
-                  <div
-                    class="px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0"
-                    :class="getPriorityClasses(item.priority)"
-                  >
+                  <div class="px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0"
+                    :class="getPriorityClasses(item.priority)">
                     {{ item.priority }}
                   </div>
                 </div>
@@ -100,34 +87,26 @@
                     </span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <div
-                      class="w-2 h-2 rounded-full"
-                      :class="getStatusColor(item.status)"
-                    ></div>
+                    <div class="w-2 h-2 rounded-full" :class="getStatusColor(item.status)"></div>
                     <span>{{ formatStatus(item.status) }}</span>
                   </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    @click="editItem(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors"
-                  >
+                <div
+                  class="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button @click="editItem(item)"
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors">
                     <Edit class="h-3 w-3" />
                     Edit
                   </button>
-                  <button
-                    @click="cycleStatus(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors"
-                  >
+                  <button @click="cycleStatus(item)"
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors">
                     <RefreshCw class="h-3 w-3" />
                     {{ getNextStatusAction(item.status) }}
                   </button>
-                  <button
-                    @click="deleteItem(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded text-xs text-red-600 transition-colors"
-                  >
+                  <button @click="deleteItem(item)"
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded text-xs text-red-600 transition-colors">
                     <Trash2 class="h-3 w-3" />
                     Delete
                   </button>
@@ -145,10 +124,8 @@
           </div>
           <h3 class="text-base font-semibold text-slate-800 mb-1">No action items</h3>
           <p class="text-sm text-slate-500 mb-4">Create your first action item to track tasks</p>
-          <button
-            @click="openCreateDialog"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200"
-          >
+          <button @click="openCreateDialog"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200">
             <Plus class="h-4 w-4" />
             Create Action Item
           </button>
@@ -171,33 +148,21 @@
         <div class="p-6 space-y-4">
           <div class="space-y-2">
             <Label for="title" class="text-sm font-medium text-slate-700">Title</Label>
-            <Input
-              id="title"
-              v-model="formData.title"
-              placeholder="What needs to be done?"
-              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20"
-            />
+            <Input id="title" v-model="formData.title" placeholder="What needs to be done?"
+              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20" />
           </div>
 
           <div class="space-y-2">
             <Label for="description" class="text-sm font-medium text-slate-700">Description</Label>
-            <Textarea
-              id="description"
-              v-model="formData.description"
-              placeholder="Add more details (optional)"
-              rows="3"
-              class="border-slate-200 focus:border-blue-400 focus:ring-blue-500/20 resize-none"
-            />
+            <Textarea id="description" v-model="formData.description" placeholder="Add more details (optional)" rows="3"
+              class="border-slate-200 focus:border-blue-400 focus:ring-blue-500/20 resize-none" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-2">
               <Label for="priority" class="text-sm font-medium text-slate-700">Priority</Label>
-              <select
-                id="priority"
-                v-model="formData.priority"
-                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20"
-              >
+              <select id="priority" v-model="formData.priority"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20">
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
                 <option value="HIGH">High</option>
@@ -206,11 +171,8 @@
 
             <div class="space-y-2">
               <Label for="assignedTo" class="text-sm font-medium text-slate-700">Assign To</Label>
-              <select
-                id="assignedTo"
-                v-model="formData.assignedToId"
-                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20"
-              >
+              <select id="assignedTo" v-model="formData.assignedToId"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20">
                 <option value="0" disabled>Select person</option>
                 <option v-for="user in meetingParticipants" :key="user.userId" :value="user.userId">
                   {{ user.userName }}
@@ -221,34 +183,24 @@
 
           <div class="space-y-2">
             <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date (Optional)</Label>
-            <Input
-              id="dueDate"
-              v-model="formData.dueDate"
-              type="date"
-              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20"
-            />
+            <Input id="dueDate" v-model="formData.dueDate" type="date"
+              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20" />
           </div>
         </div>
 
         <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3 justify-end">
-          <button
-            @click="closeDialog"
-            class="px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-colors"
-          >
+          <button @click="closeDialog"
+            class="px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-colors">
             Cancel
           </button>
-          <button
-            @click="saveActionItem"
-            :disabled="!formData.title || !formData.assignedToId"
-            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
-          >
+          <button @click="saveActionItem" :disabled="!formData.title || !formData.assignedToId"
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors">
             {{ editingItem ? 'Update' : 'Create' }}
           </button>
         </div>
       </DialogContent>
     </Dialog>
 
-    <!-- Delete Confirmation Dialog -->
     <Dialog v-model:open="showDeleteDialog">
       <DialogContent class="sm:max-w-[400px] p-0">
         <div class="px-6 py-4">
@@ -271,16 +223,12 @@
         </div>
 
         <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3 justify-end">
-          <button
-            @click="showDeleteDialog = false"
-            class="px-3 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-sm transition-colors"
-          >
+          <button @click="showDeleteDialog = false"
+            class="px-3 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-sm transition-colors">
             Cancel
           </button>
-          <button
-            @click="confirmDelete"
-            class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition-colors"
-          >
+          <button @click="confirmDelete"
+            class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition-colors">
             Delete
           </button>
         </div>
