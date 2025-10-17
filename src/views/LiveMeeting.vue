@@ -199,7 +199,7 @@
           </div>
 
           <!-- Action Items -->
-          <ActionItemManager :meeting-id="parseInt(route.params.id as string)" />
+          <ActionItemManager :meeting-id="parseInt(route.params.id as string)"  />
         </div>
       </div>
 

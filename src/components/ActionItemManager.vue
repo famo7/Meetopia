@@ -133,73 +133,8 @@
       </div>
     </Transition>
 
-    <!-- Create/Edit Dialog -->
-    <Dialog v-model:open="showCreateDialog">
-      <DialogContent class="sm:max-w-[480px] p-0">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-slate-200">
-          <DialogTitle class="text-lg font-semibold text-slate-800">
-            {{ editingItem ? 'Edit Action Item' : 'Create Action Item' }}
-          </DialogTitle>
-          <DialogDescription class="text-slate-600 mt-1 text-sm">
-            {{ editingItem ? 'Update the details' : 'Add a new task to track' }}
-          </DialogDescription>
-        </div>
-
-        <div class="p-6 space-y-4">
-          <div class="space-y-2">
-            <Label for="title" class="text-sm font-medium text-slate-700">Title</Label>
-            <Input id="title" v-model="formData.title" placeholder="What needs to be done?"
-              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20" />
-          </div>
-
-          <div class="space-y-2">
-            <Label for="description" class="text-sm font-medium text-slate-700">Description</Label>
-            <Textarea id="description" v-model="formData.description" placeholder="Add more details (optional)" rows="3"
-              class="border-slate-200 focus:border-blue-400 focus:ring-blue-500/20 resize-none" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-2">
-              <Label for="priority" class="text-sm font-medium text-slate-700">Priority</Label>
-              <select id="priority" v-model="formData.priority"
-                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20">
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-              </select>
-            </div>
-
-            <div class="space-y-2">
-              <Label for="assignedTo" class="text-sm font-medium text-slate-700">Assign To</Label>
-              <select id="assignedTo" v-model="formData.assignedToId"
-                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-blue-400 focus:ring-blue-500/20">
-                <option value="0" disabled>Select person</option>
-                <option v-for="user in meetingParticipants" :key="user.userId" :value="user.userId">
-                  {{ user.userName }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date (Optional)</Label>
-            <Input id="dueDate" v-model="formData.dueDate" type="date"
-              class="h-10 border-slate-200 focus:border-blue-400 focus:ring-blue-500/20" />
-          </div>
-        </div>
-
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex gap-3 justify-end">
-          <button @click="closeDialog"
-            class="px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-colors">
-            Cancel
-          </button>
-          <button @click="saveActionItem" :disabled="!formData.title || !formData.assignedToId"
-            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors">
-            {{ editingItem ? 'Update' : 'Create' }}
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <!-- Create Dialog -->
+    <ActionItemCreate v-model:open="showCreateDialog" :meetingId="meetingId" :participants="participants" />
 
     <Dialog v-model:open="showDeleteDialog">
       <DialogContent class="sm:max-w-[400px] p-0">
@@ -238,11 +173,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { ref, computed, onMounted } from 'vue'
+
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { useActionItemStore } from '@/stores/actionItem'
+import { useParticipantStore } from '@/stores/participant'
+import ActionItemCreate from './ActionItemCreate.vue'
+import type { ActionItem } from '@/types/actionItem'
 import {
   Plus,
   CheckSquare,
@@ -258,75 +195,42 @@ import {
 type ActionItemStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE'
 type Priority = 'LOW' | 'MEDIUM' | 'HIGH'
 
-interface Participant {
-  userId: number
-  userName: string
-  color: string
-  lastActivity: Date
+
+const actionItemStore = useActionItemStore()
+const participantStore = useParticipantStore()
+
+const loadActionItems = async () => {
+  try {
+    await actionItemStore.fetchActionItems(props.meetingId)
+  } catch (error) {
+    console.error('Failed to load action items:', error)
+  }
 }
 
-interface ActionItem {
-  id: number
-  title: string
-  description: string
-  status: ActionItemStatus
-  priority: Priority
-  dueDate: string | null
-  assignedTo: { id: number; name: string }
-  assignedBy: { id: number; name: string }
+
+const loadParticipants = async () => {
+  try {
+    await participantStore.fetchParticipants(props.meetingId)
+  } catch (error) {
+    console.error('Failed to load action items:', error)
+  }
 }
 
-interface Props {
-  meetingId: number
-  participants?: Participant[]
-}
+onMounted(() => {
+  loadActionItems()
+  loadParticipants()
 
-const props = withDefaults(defineProps<Props>(), {
-  participants: () => []
 })
 
-// Component state
+const props = defineProps(['meetingId'])
+
+
 const isExpanded = ref(true)
 const showCreateDialog = ref(false)
 const showDeleteDialog = ref(false)
 const editingItem = ref<ActionItem | null>(null)
 const itemToDelete = ref<ActionItem | null>(null)
 
-// Sample data (in real app, this would come from props/store)
-const fakeActionItems = ref<ActionItem[]>([
-  {
-    id: 1,
-    title: "Review Q4 marketing strategy document",
-    description: "Go through the marketing strategy deck and provide feedback on key initiatives and budget allocation.",
-    status: "IN_PROGRESS",
-    priority: "HIGH",
-    dueDate: "2024-01-15",
-    assignedTo: { id: 1, name: "You" },
-    assignedBy: { id: 2, name: "Sarah Chen" }
-  },
-  {
-    id: 2,
-    title: "Schedule user research interviews",
-    description: "Coordinate with product team to schedule at least 5 user interviews for the new feature.",
-    status: "OPEN",
-    priority: "MEDIUM",
-    dueDate: "2024-01-20",
-    assignedTo: { id: 3, name: "Alex Johnson" },
-    assignedBy: { id: 1, name: "You" }
-  },
-  {
-    id: 3,
-    title: "Update API documentation",
-    description: "Document the new endpoints and update existing API documentation with examples.",
-    status: "DONE",
-    priority: "LOW",
-    dueDate: "2024-01-10",
-    assignedTo: { id: 4, name: "Maria Garcia" },
-    assignedBy: { id: 1, name: "You" }
-  }
-])
-
-// Form data
 const formData = ref({
   title: '',
   description: '',
@@ -336,8 +240,9 @@ const formData = ref({
   dueDate: ''
 })
 
-// Computed properties
-const actionItems = computed(() => fakeActionItems.value)
+const actionItems = computed(() => actionItemStore.actionItems)
+const participants = computed(() => participantStore.participants)
+
 const sortedActionItems = computed(() => {
   const statusOrder = { 'OPEN': 0, 'IN_PROGRESS': 1, 'DONE': 2 }
   return [...actionItems.value].sort((a, b) => {
@@ -358,20 +263,7 @@ const hasCompletedItems = computed(() =>
   actionItems.value.some(item => item.status === 'DONE')
 )
 
-// Use participants from props or fallback to fake data
-const meetingParticipants = computed(() => {
-  if (props.participants && props.participants.length > 0) {
-    return props.participants
-  }
 
-  // Fallback fake participants
-  return [
-    { userId: 1, userName: "You", color: "#3b82f6", lastActivity: new Date() },
-    { userId: 2, userName: "Sarah Chen", color: "#ec4899", lastActivity: new Date() },
-    { userId: 3, userName: "Alex Johnson", color: "#10b981", lastActivity: new Date() },
-    { userId: 4, userName: "Maria Garcia", color: "#f59e0b", lastActivity: new Date() }
-  ]
-})
 
 const toggleExpanded = () => {
   isExpanded.value = !isExpanded.value
@@ -485,32 +377,16 @@ const editItem = (item: ActionItem) => {
 
 const saveActionItem = () => {
   if (!formData.value.title || !formData.value.assignedToId) return
-
-  console.log('Saving action item:', formData.value)
-
-  if (editingItem.value) {
-    console.log('Update action item logic here')
-  } else {
-    console.log('Create action item logic here')
-  }
-
+  // TODO: Implement save logic with actionItemStore
   closeDialog()
 }
 
 const toggleItemStatus = (item: ActionItem) => {
-  const newStatus = item.status === 'DONE' ? 'OPEN' : 'DONE'
-  console.log(`Toggling status from ${item.status} to ${newStatus} for item: ${item.title}`)
+  // TODO: Implement toggle logic with actionItemStore
 }
 
 const cycleStatus = (item: ActionItem) => {
-  const statusCycle = {
-    'OPEN': 'IN_PROGRESS',
-    'IN_PROGRESS': 'DONE',
-    'DONE': 'OPEN'
-  }
-
-  const newStatus = statusCycle[item.status as keyof typeof statusCycle] as ActionItemStatus
-  console.log(`Cycling status from ${item.status} to ${newStatus} for item: ${item.title}`)
+  // TODO: Implement cycle logic with actionItemStore
 }
 
 const deleteItem = (item: ActionItem) => {
@@ -520,19 +396,11 @@ const deleteItem = (item: ActionItem) => {
 
 const confirmDelete = () => {
   if (!itemToDelete.value) return
-
-  console.log('Deleting action item:', itemToDelete.value.title)
+  // TODO: Implement delete logic with actionItemStore
   showDeleteDialog.value = false
   itemToDelete.value = null
 }
 
-// Expose methods for parent component
-defineExpose({
-  updateConnectedUsers: (users: Array<{ userId: number; userName: string }>) => {
-    console.log('Updating connected users in ActionItemManager:', users)
-    // In a real app, you would update the participants list here
-  }
-})
 </script>
 
 <style scoped>

@@ -19,7 +19,7 @@ export const useParticipantStore = defineStore('participant', () => {
     error.value = null
 
     try {
-      const response = await api.get(`/meetings/${meetingId}`)
+      const response = await api.get(`/meetings/${meetingId}/participants`)
       participants.value = response.data.participants || []
       return response.data.participants
     } catch (err: any) {
