@@ -33,7 +33,12 @@
 
           <div>
             <Label for="dueDate">Due Date</Label>
-            <Input id="dueDate" v-model="formData.dueDate" type="date" class="mt-1" />
+            <DatePicker
+              id="dueDate"
+              v-model="dueDateValue"
+              placeholder="Select due date"
+              class="mt-1"
+            />
           </div>
         </div>
 
@@ -64,11 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { DatePicker } from '@/components/ui/date-picker'
 import type { Participant } from '@/types'
 import type { CreateActionItemRequest } from '@/types/actionItem'
 import { useActionItemStore } from '@/stores/actionItem'
@@ -90,6 +96,17 @@ const formData = ref<CreateActionItemRequest>({
   description: '',
   priority: 'MEDIUM',
   dueDate: ''
+})
+
+// Computed property to handle date conversion between string and Date
+const dueDateValue = computed({
+  get: () => {
+    if (!formData.value.dueDate) return undefined
+    return new Date(formData.value.dueDate)
+  },
+  set: (value) => {
+    formData.value.dueDate = value ? value.toISOString().split('T')[0] : ''
+  }
 })
 
 const handleCancel = () => {
