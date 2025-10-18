@@ -105,7 +105,7 @@
                     <RefreshCw class="h-3 w-3" />
                     {{ getNextStatusAction(item.status) }}
                   </button>
-                  <button @click="deleteItem(item)"
+                  <button v-if="canDelete(item)" @click="deleteItem(item)"
                     class="flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded text-xs text-red-600 transition-colors">
                     <Trash2 class="h-3 w-3" />
                     Delete
@@ -162,7 +162,7 @@
             class="px-3 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-sm transition-colors">
             Cancel
           </button>
-          <button @click="confirmDelete"
+          <button v-if="canDelete(itemToDelete)" @click="confirmDelete"
             class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition-colors">
             Delete
           </button>
@@ -178,6 +178,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { useActionItemStore } from '@/stores/actionItem'
 import { useParticipantStore } from '@/stores/participant'
+import { useAuthStore } from '@/stores/auth'
 import ActionItemCreate from './ActionItemCreate.vue'
 import type { ActionItem } from '@/types/actionItem'
 import {
@@ -198,6 +199,8 @@ type Priority = 'LOW' | 'MEDIUM' | 'HIGH'
 
 const actionItemStore = useActionItemStore()
 const participantStore = useParticipantStore()
+const authStore = useAuthStore()
+const currentUser = computed(() => authStore.user)
 
 const loadActionItems = async () => {
   try {
@@ -394,11 +397,22 @@ const deleteItem = (item: ActionItem) => {
   showDeleteDialog.value = true
 }
 
-const confirmDelete = () => {
+const canDelete = (item: ActionItem | null) => {
+  if (!item) return false
+  // Only allow deleting if the current user exists and is the owner/assigned user
+  return !!currentUser.value && currentUser.value.id === item.createdById
+}
+
+const confirmDelete = async () => {
   if (!itemToDelete.value) return
-  // TODO: Implement delete logic with actionItemStore
-  showDeleteDialog.value = false
-  itemToDelete.value = null
+  try {
+    await actionItemStore.deleteActionItem(props.meetingId, itemToDelete.value.id)
+  } catch (err) {
+    console.error('Failed to delete action item:', err)
+  } finally {
+    showDeleteDialog.value = false
+    itemToDelete.value = null
+  }
 }
 
 </script>

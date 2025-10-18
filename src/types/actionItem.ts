@@ -13,8 +13,10 @@ export interface ActionItem {
   createdAt: string
   updatedAt: string
   meetingId: number
+  createdById: number
   assignedById: number
   assignedToId: number
+  createdBy: User
   assignedBy: User
   assignedTo: User
 }
