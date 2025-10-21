@@ -1,31 +1,31 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog v-model:open="isOpen">
     <DialogContent class="max-w-lg p-0">
       <DialogHeader class="px-6 pt-6 pb-4 border-b border-slate-100">
         <DialogTitle class="text-xl font-semibold text-slate-900">
-          Create Action Item
+          Update Action Item
         </DialogTitle>
         <DialogDescription class="text-slate-600 mt-1">
-          Add a new task to track progress and assignments.
+          Modify the details of this action item.
         </DialogDescription>
       </DialogHeader>
 
       <div class="px-6 py-4 space-y-5">
         <div class="space-y-2">
           <Label for="title" class="text-sm font-medium text-slate-700">Title *</Label>
-          <Input id="title" v-model="safeFormData.title" placeholder="What needs to be done?" required class="h-10" />
+          <Input id="title" v-model="formData.title" placeholder="What needs to be done?" required class="h-10" />
         </div>
 
         <div class="space-y-2">
           <Label for="description" class="text-sm font-medium text-slate-700">Description</Label>
-          <Textarea id="description" v-model="safeFormData.description"
-            placeholder="Add more details about this task..." rows="3" class="resize-none" />
+          <Textarea id="description" v-model="formData.description" placeholder="Add more details about this task..."
+            rows="3" class="resize-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
             <Label for="priority" class="text-sm font-medium text-slate-700">Priority</Label>
-            <Select v-model="safeFormData.priority">
+            <Select v-model="formData.priority">
               <SelectTrigger class="h-10">
                 <SelectValue />
               </SelectTrigger>
@@ -53,8 +53,32 @@
           </div>
 
           <div class="space-y-2">
-            <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date</Label>
-            <DatePicker id="dueDate" v-model="dueDateValue" placeholder="Select date" class="h-10" />
+            <Label for="status" class="text-sm font-medium text-slate-700">Status</Label>
+            <Select v-model="formData.status">
+              <SelectTrigger class="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="OPEN" label="Open">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                    Open
+                  </div>
+                </SelectItem>
+                <SelectItem value="IN_PROGRESS" label="In Progress">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    In Progress
+                  </div>
+                </SelectItem>
+                <SelectItem value="DONE" label="Done">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    Done
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -78,15 +102,23 @@
             </SelectContent>
           </Select>
         </div>
+
+        <div class="space-y-2">
+          <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date</Label>
+          <DatePicker id="dueDate" :model-value="formData.dueDate ? new Date(formData.dueDate) : undefined"
+            @update:model-value="(date: Date | undefined) => formData.dueDate = date ? date.toLocaleDateString('en-CA') : ''"
+            placeholder="Select date" class="h-10" />
+        </div>
       </div>
 
       <DialogFooter class="px-6 py-4 bg-slate-50 border-t border-slate-100 gap-3">
-        <Button type="button" variant="outline" @click="$emit('update:open', false)" class="flex-1">
+        <Button type="button" variant="outline" @click="closeDialog" class="flex-1">
           Cancel
         </Button>
-        <Button type="button" @click="handleSubmit" :disabled="isLoading" class="flex-1">
+        <Button type="button" @click="handleSubmit" :disabled="isLoading || !formData.assignedToId || !formData.title"
+          class="flex-1">
           <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-          Create Action Item
+          Save Changes
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -94,21 +126,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DatePicker } from '@/components/ui/date-picker'
 import { Loader2 } from 'lucide-vue-next'
-import type { Participant } from '@/types'
-import type { CreateActionItemRequest, Priority } from '@/types/actionItem'
 import { useActionItemStore } from '@/stores/actionItem'
+import DatePicker from '@/components/ui/date-picker/DatePicker.vue'
+import type { ActionItem, ActionItemStatus, Participant, Priority } from '@/types'
 
 interface Props {
   open: boolean
+  item?: ActionItem | null
   meetingId: number
   participants: Participant[]
 }
@@ -124,68 +156,54 @@ const emit = defineEmits<Emits>()
 const actionItemStore = useActionItemStore()
 const isLoading = ref(false)
 
-const formData = ref<CreateActionItemRequest>({
+const isOpen = computed({
+  get: () => props.open,
+  set: (value) => emit('update:open', value)
+})
+
+const formData = ref({
   title: '',
   description: '',
-  priority: 'MEDIUM',
-  dueDate: '',
-  assignedToId: undefined
+  priority: 'MEDIUM' as Priority,
+  status: 'OPEN' as ActionItemStatus,
+  assignedToId: '',
+  dueDate: '' as string
 })
 
-const safeFormData = computed(() => formData.value || {
-  title: '',
-  description: '',
-  priority: 'MEDIUM',
-  dueDate: '',
-  assignedToId: undefined
-})
-
-const dueDateValue = computed({
-  get: () => formData.value.dueDate ? new Date(formData.value.dueDate) : undefined,
-  set: (value) => {
-    formData.value.dueDate = value ? value.toLocaleDateString('en-CA') : ''
-  }
-})
-
-watch(() => props.open, (newVal) => {
-  if (!newVal) {
-    formData.value = {
-      title: '',
-      description: '',
-      priority: 'MEDIUM' as Priority,
-      dueDate: '',
-      assignedToId: undefined
-    }
-  }
-})
+const closeDialog = () => {
+  isOpen.value = false
+}
 
 const handleSubmit = async () => {
+  if (!props.item) return
+
   isLoading.value = true
   try {
-    await actionItemStore.createActionItem(props.meetingId, {
-      title: formData.value.title,
-      description: formData.value.description,
-      priority: formData.value.priority,
-      assignedToId: Number(formData.value.assignedToId),
-      dueDate: formData.value.dueDate || undefined,
-      status: 'OPEN'
-    })
-
-    await actionItemStore.fetchActionItems(props.meetingId)
-    emit('updated')
-    emit('update:open', false)
-
-    formData.value = {
-      title: '',
-      description: '',
-      priority: 'MEDIUM',
-      dueDate: '',
-      assignedToId: undefined
+    const updateData = {
+      ...formData.value,
+      assignedToId: Number(formData.value.assignedToId)
     }
+
+    await actionItemStore.updateActionItem(props.meetingId, props.item.id, updateData)
+    emit('updated')
+    closeDialog()
   } catch (error) {
-    console.error('Failed to create action item:', error)
+    console.error('Failed to update action item:', error)
   } finally {
     isLoading.value = false
   }
 }
+
+watch(() => props.open, (open) => {
+  if (open && props.item) {
+    formData.value = {
+      title: props.item.title,
+      description: props.item.description,
+      priority: props.item.priority,
+      status: props.item.status,
+      assignedToId: props.item.assignedTo.id.toString(),
+      dueDate: props.item.dueDate || ''
+    }
+  }
+})
 </script>
