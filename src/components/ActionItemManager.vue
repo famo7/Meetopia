@@ -71,7 +71,8 @@
                 <div class="flex items-center gap-4 mt-3 text-xs text-slate-500">
                   <div class="flex items-center gap-1">
                     <User class="h-3 w-3" />
-                    <span>{{ item.assignedTo.name }}</span>
+                    <span>{{ item.assignedTo?.name }}{{ item.assignedTo?.id === authStore.user?.id ? ' (You)' : ''
+                    }}</span>
                   </div>
                   <div v-if="item.dueDate" class="flex items-center gap-1">
                     <Calendar class="h-3 w-3" />
@@ -125,14 +126,14 @@
     </Transition>
 
     <!-- Dialogs -->
-    <ActionItemCreate v-model:open="showCreateDialog" :meetingId="meetingId" :participants="participants"
+    <ActionItemCreate v-model:open="showCreateDialog" :meetingId="meetingId" :participants="participantsWithCurrentUser"
       @updated="handleItemCreated" />
 
     <UpdateActionItem v-model:open="showUpdateDialog" :item="editingItem" :meetingId="meetingId"
-      :participants="participants" @updated="handleItemUpdated" />
+      :participants="participantsWithCurrentUser" @updated="handleItemUpdated" />
 
     <DeleteActionItem v-model:open="showDeleteDialog" :item="itemToDelete" :meetingId="meetingId"
-      @deleted="handleItemDeleted" />
+      :participants="participantsWithCurrentUser" @deleted="handleItemDeleted" />
   </div>
 </template>
 
@@ -140,6 +141,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useActionItemStore } from '@/stores/actionItem'
 import { useParticipantStore } from '@/stores/participant'
+import { useAuthStore } from '@/stores/auth'
 import UpdateActionItem from './UpdateActionItem.vue'
 import DeleteActionItem from './DeleteActionItem.vue'
 import ActionItemCreate from './ActionItemCreate.vue'
@@ -157,12 +159,14 @@ import {
   Clock,
 } from 'lucide-vue-next'
 import type { ActionItemStatus, Priority } from '@/types/actionItem'
+import type { Participant } from '@/types'
 
 
 const props = defineProps<{ meetingId: number }>()
 
 const actionItemStore = useActionItemStore()
 const participantStore = useParticipantStore()
+const authStore = useAuthStore()
 
 const isExpanded = ref(true)
 const showUpdateDialog = ref(false)
@@ -173,6 +177,19 @@ const itemToDelete = ref<ActionItem | null>(null)
 
 const actionItems = computed(() => actionItemStore.actionItems)
 const participants = computed(() => participantStore.participants)
+
+const participantsWithCurrentUser = computed(() => {
+  if (!authStore.user) return participants.value
+
+  return [
+    ...participantStore.participants,
+    {
+      user: authStore.user,
+      id: authStore.user.id,
+      meetingId: props.meetingId
+    } as Participant
+  ]
+})
 
 const sortedActionItems = computed(() => {
   const statusOrder = { 'OPEN': 0, 'IN_PROGRESS': 1, 'DONE': 2 }
@@ -215,7 +232,6 @@ const toggleExpanded = () => {
 }
 
 const openCreateDialog = () => {
-  console.log('openCreateDialog called, setting showCreateDialog to true')
   showCreateDialog.value = true
 }
 

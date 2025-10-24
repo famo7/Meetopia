@@ -84,20 +84,14 @@
 
         <div class="space-y-2">
           <Label for="assignedTo" class="text-sm font-medium text-slate-700">Assigned To *</Label>
+
           <Select v-model="formData.assignedToId">
             <SelectTrigger class="h-10">
               <SelectValue placeholder="Select team member" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="participant in participants" :key="participant.user.id"
-                :value="participant.user.id.toString()" :label="participant.user.name">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600">
-                    {{ participant.user.name.charAt(0).toUpperCase() }}
-                  </div>
-                  {{ participant.user.name }}
-                </div>
+              <SelectItem v-for="participant in participants" :key="participant.user.id" :value="participant.user.id"
+                :label="participant.user.id === authStore.user?.id ? `${participant.user.name} (You)` : participant.user.name">
               </SelectItem>
             </SelectContent>
           </Select>
@@ -135,6 +129,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2 } from 'lucide-vue-next'
 import { useActionItemStore } from '@/stores/actionItem'
+import { useAuthStore } from '@/stores/auth'
 import DatePicker from '@/components/ui/date-picker/DatePicker.vue'
 import type { ActionItem, ActionItemStatus, Participant, Priority } from '@/types'
 
@@ -154,6 +149,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const actionItemStore = useActionItemStore()
+const authStore = useAuthStore()
 const isLoading = ref(false)
 
 const isOpen = computed({

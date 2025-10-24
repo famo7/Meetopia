@@ -65,15 +65,8 @@
               <SelectValue placeholder="Select team member" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="participant in participants" :key="participant.user.id"
-                :value="participant.user.id.toString()" :label="participant.user.name">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600">
-                    {{ participant.user.name.charAt(0).toUpperCase() }}
-                  </div>
-                  {{ participant.user.name }}
-                </div>
+              <SelectItem v-for="participant in participants" :key="participant.user.id" :value="participant.user.id"
+                :label="participant.user.id === authStore.user?.id ? `${participant.user.name} (You)` : participant.user.name">
               </SelectItem>
             </SelectContent>
           </Select>
@@ -106,6 +99,7 @@ import { Loader2 } from 'lucide-vue-next'
 import type { Participant } from '@/types'
 import type { CreateActionItemRequest, Priority } from '@/types/actionItem'
 import { useActionItemStore } from '@/stores/actionItem'
+import { useAuthStore } from '@/stores/auth'
 
 interface Props {
   open: boolean
@@ -122,6 +116,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const actionItemStore = useActionItemStore()
+const authStore = useAuthStore()
 const isLoading = ref(false)
 
 const formData = ref<CreateActionItemRequest>({
