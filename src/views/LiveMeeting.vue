@@ -1,11 +1,11 @@
 <template>
-  <div class="h-screen bg-gray-900 text-white flex flex-col">
+  <div class="h-screen bg-background text-foreground flex flex-col">
     <!-- Top Bar -->
-    <div class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex-shrink-0">
+    <div class="bg-card/95 backdrop-blur-sm border-b border-border/50 px-6 py-4 flex-shrink-0 shadow-sm">
       <div class="flex items-center justify-between max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
-          <h1 class="text-lg font-semibold">{{ meeting?.title || 'Loading...' }}</h1>
-          <Badge class="bg-green-500 text-white hover:bg-green-500 flex items-center gap-1.5">
+          <h1 class="text-lg font-semibold tracking-tight">{{ meeting?.title || 'Loading...' }}</h1>
+          <Badge variant="default" class="bg-green-500 text-white hover:bg-green-500 flex items-center gap-1.5 rounded-full">
             <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
             Live
           </Badge>
@@ -14,18 +14,18 @@
         <div class="flex items-center gap-4">
           <!-- Toggle View Button -->
           <Button variant="outline" size="sm" @click="toggleLayout"
-            class="bg-gray-700 hover:bg-gray-600 text-white border-gray-600">
+            class="bg-muted hover:bg-muted/80 text-foreground border-border rounded-xl">
             <component :is="currentLayout === 'split' ? Video : FileText" class="h-4 w-4 mr-1.5" />
             {{ currentLayout === 'split' ? 'Full Screen Video' : 'Split View' }}
           </Button>
 
           <!-- Active Participants -->
           <div class="flex items-center gap-2">
-            <Users class="h-4 w-4 text-gray-400" />
-            <span class="text-sm text-gray-300">{{ connectedUsers.length }} in meeting</span>
+            <Users class="h-4 w-4 text-muted-foreground" />
+            <span class="text-sm text-muted-foreground">{{ connectedUsers.length }} in meeting</span>
           </div>
 
-          <Button variant="destructive" size="sm" @click="leaveMeeting">
+          <Button variant="destructive" size="sm" @click="leaveMeeting" class="rounded-xl">
             <LogOut class="h-4 w-4 mr-1.5" />
             Leave Meeting
           </Button>
@@ -37,7 +37,7 @@
     <div class="flex-1 flex overflow-hidden">
       <!-- Agora Video Conference -->
       <div :class="[
-        'transition-all duration-300 bg-gradient-to-br from-gray-950 to-gray-900 relative',
+        'transition-all duration-300 bg-gradient-to-br from-gray-900 to-gray-800 relative',
         currentLayout === 'split' ? 'w-1/2' : 'flex-1'
       ]">
         <!-- Remote Video Container -->
@@ -49,21 +49,21 @@
         <div id="local-video"
           class="absolute bottom-24 right-6 w-64 h-48 bg-gray-900 rounded-xl overflow-hidden shadow-2xl z-10 border border-gray-700/50">
           <!-- Local video stream -->
-          <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-white">
+          <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg text-xs text-white">
             You
           </div>
         </div>
 
         <!-- Video Controls Bar -->
         <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
-          <div class="bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl px-6 py-4 border border-gray-700/50">
+          <div class="bg-card/95 backdrop-blur-xl rounded-2xl shadow-2xl px-6 py-4 border border-border/50">
             <div class="flex items-center gap-3">
               <!-- Microphone Toggle -->
               <button @click="toggleAudio" :class="[
                 'p-4 rounded-xl transition-all duration-200 hover:scale-105',
                 isAudioEnabled
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                  : 'bg-red-500 hover:bg-red-600 text-white'
+                  ? 'bg-muted hover:bg-muted/80 text-foreground'
+                  : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
               ]" :title="isAudioEnabled ? 'Mute microphone' : 'Unmute microphone'">
                 <Mic v-if="isAudioEnabled" class="h-5 w-5" />
                 <MicOff v-else class="h-5 w-5" />
@@ -73,8 +73,8 @@
               <button @click="toggleVideo" :class="[
                 'p-4 rounded-xl transition-all duration-200 hover:scale-105',
                 isVideoEnabled
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                  : 'bg-red-500 hover:bg-red-600 text-white'
+                  ? 'bg-muted hover:bg-muted/80 text-foreground'
+                  : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
               ]" :title="isVideoEnabled ? 'Turn off camera' : 'Turn on camera'">
                 <Video v-if="isVideoEnabled" class="h-5 w-5" />
                 <VideoOff v-else class="h-5 w-5" />
@@ -84,8 +84,8 @@
               <button @click="toggleScreenShare" :class="[
                 'p-4 rounded-xl transition-all duration-200 hover:scale-105',
                 isScreenSharing
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : 'bg-gray-700 hover:bg-gray-600 text-white'
+                  ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                  : 'bg-muted hover:bg-muted/80 text-foreground'
               ]" :title="isScreenSharing ? 'Stop sharing screen' : 'Share screen'">
                 <MonitorOff v-if="isScreenSharing" class="h-5 w-5" />
                 <Monitor v-else class="h-5 w-5" />
@@ -93,11 +93,11 @@
 
 
               <!-- Divider -->
-              <div class="w-px h-10 bg-gray-600"></div>
+              <div class="w-px h-10 bg-border"></div>
 
               <!-- Leave Meeting -->
               <button @click="leaveMeeting"
-                class="p-4 rounded-xl bg-red-500 hover:bg-red-600 text-white transition-all duration-200 hover:scale-105"
+                class="p-4 rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-all duration-200 hover:scale-105"
                 title="Leave meeting">
                 <PhoneOff class="h-5 w-5" />
               </button>
@@ -107,18 +107,18 @@
 
         <!-- Loading State -->
         <div v-if="!agoraClient"
-          class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-gradient-to-br from-gray-950 to-gray-900">
+          class="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground bg-gradient-to-br from-gray-900 to-gray-800">
           <div class="relative">
-            <div class="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
+            <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
             <Video class="h-16 w-16 relative z-10 opacity-50" />
           </div>
           <p class="mt-6 text-lg font-medium">Connecting to video...</p>
-          <p class="mt-2 text-sm text-gray-500">This may take a few moments</p>
+          <p class="mt-2 text-sm text-muted-foreground/70">This may take a few moments</p>
         </div>
 
         <!-- Device Warning -->
         <div v-if="agoraClient && (!localAudioTrack && !localVideoTrack)"
-          class="absolute top-4 left-4 bg-yellow-500/90 backdrop-blur-sm px-4 py-3 rounded-lg text-yellow-900 max-w-sm z-30">
+          class="absolute top-4 left-4 bg-yellow-500/90 backdrop-blur-sm px-4 py-3 rounded-xl text-yellow-900 max-w-sm z-30">
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -135,25 +135,25 @@
 
         <!-- Empty State (No Remote Users) -->
         <div v-if="agoraClient && remoteUsers.size === 0"
-          class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
+          class="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground pointer-events-none">
           <Users class="h-20 w-20 mb-4 opacity-30" />
-          <p class="text-lg font-medium text-gray-300">Waiting for others to join...</p>
+          <p class="text-lg font-medium">Waiting for others to join...</p>
         </div>
       </div>
 
       <!-- Collaborative Editor -->
-      <div v-if="currentLayout === 'split'" class="w-1/2 overflow-y-auto border-l border-gray-700">
+      <div v-if="currentLayout === 'split'" class="w-1/2 overflow-y-auto border-l border-border/50">
         <div class="p-8 space-y-6">
           <!-- Meeting Notes -->
-          <div class="bg-white rounded-lg shadow-lg min-h-[600px]">
+          <div class="bg-card rounded-xl shadow-sm min-h-[600px] border-0">
             <!-- Editor Header -->
-            <div class="border-b border-gray-200 px-6 py-4">
+            <div class="border-b border-border/50 px-6 py-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900">Meeting Notes</h2>
-                  <p class="text-xs text-gray-500 mt-1">
+                  <h2 class="text-lg font-semibold">Meeting Notes</h2>
+                  <p class="text-xs text-muted-foreground mt-1">
                     Collaborating with {{ connectedUsers.length - 1 }} others
-                    <span v-if="isReceivingUpdate" class="text-blue-600 ml-2">
+                    <span v-if="isReceivingUpdate" class="text-primary ml-2">
                       ⚡ Receiving updates...
                     </span>
                   </p>
@@ -164,14 +164,14 @@
             <!-- Editor Content -->
             <div class="p-6">
               <Textarea ref="textareaRef" v-model="notes" @input="handleNotesUpdate"
-                class="min-h-[500px] text-gray-900 font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                class="min-h-[500px] text-foreground font-mono text-sm leading-relaxed border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder="Start taking notes... Everyone in the meeting can see and edit these notes in real-time." />
 
               <!-- Live Cursors Indicator -->
-              <div v-if="connectedUsers.length > 1" class="mt-4 flex items-center gap-2 text-xs text-gray-500">
+              <div v-if="connectedUsers.length > 1" class="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <div class="flex -space-x-2">
                   <div v-for="user in connectedUsers.filter(u => u.userId !== currentUserId)" :key="user.socketId"
-                    class="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-semibold text-white"
+                    class="w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-xs font-semibold text-foreground"
                     :style="{ backgroundColor: user.color }" :title="user.userName">
                     {{ getInitials(user.userName) }}
                   </div>
@@ -184,10 +184,10 @@
             </div>
           </div>
           <!-- Auto-save indicator -->
-          <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
+          <div class="mt-4 flex items-center justify-between text-xs text-muted-foreground">
             <div class="flex items-center gap-2">
               <div v-if="isSaving" class="flex items-center gap-2">
-                <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-400"></div>
+                <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-muted-foreground"></div>
                 <span>Saving...</span>
               </div>
               <div v-else-if="lastSaved" class="flex items-center gap-2">
@@ -195,7 +195,7 @@
                 <span>Saved {{ lastSaved }}</span>
               </div>
             </div>
-            <span class="text-gray-500">{{ notes.length }} characters</span>
+            <span class="text-muted-foreground/70">{{ notes.length }} characters</span>
           </div>
 
           <!-- Action Items -->
@@ -204,38 +204,38 @@
       </div>
 
       <!-- Participants Sidebar -->
-      <div class="w-80 bg-gray-800 border-l border-gray-700 flex-shrink-0 overflow-y-auto">
+      <div class="w-80 bg-card/95 backdrop-blur-sm border-l border-border/50 flex-shrink-0 overflow-y-auto">
         <div class="p-6">
-          <h3 class="text-sm font-semibold mb-4 text-gray-100">
+          <h3 class="text-sm font-semibold mb-4">
             Currently In Meeting ({{ connectedUsers.length }})
           </h3>
 
           <div class="space-y-2">
             <div v-for="user in connectedUsers" :key="user.socketId"
-              class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors">
+              class="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted/80 transition-all duration-200">
               <div class="relative">
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold text-white"
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold text-foreground"
                   :style="{ backgroundColor: user.color }">
                   {{ getInitials(user.userName) }}
                 </div>
                 <div
-                  class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800 animate-pulse">
+                  class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-card animate-pulse">
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-white truncate">
+                <p class="text-sm font-medium truncate">
                   {{ user.userName }}
-                  <span v-if="user.userId === currentUserId" class="text-xs text-gray-400">(You)</span>
+                  <span v-if="user.userId === currentUserId" class="text-xs text-muted-foreground">(You)</span>
                 </p>
-                <p class="text-xs text-gray-500">Online</p>
+                <p class="text-xs text-muted-foreground">Online</p>
               </div>
             </div>
           </div>
 
           <!-- Empty State -->
           <div v-if="connectedUsers.length === 0" class="text-center py-8">
-            <Users class="h-12 w-12 mx-auto mb-3 text-gray-600" />
-            <p class="text-sm text-gray-400">Connecting...</p>
+            <Users class="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+            <p class="text-sm text-muted-foreground">Connecting...</p>
           </div>
         </div>
       </div>
@@ -315,7 +315,6 @@ const toggleAudio = async () => {
       isAudioEnabled.value = true
     }
   } catch (error) {
-    // Revert state on error
     isAudioEnabled.value = !isAudioEnabled.value
   }
 }
@@ -326,12 +325,10 @@ const toggleVideo = async () => {
   if (isVideoEnabled.value) {
     await localVideoTrack.setEnabled(false)
     isVideoEnabled.value = false
-
     showCameraOffOverlay('local-video', authStore.user!.name)
   } else {
     await localVideoTrack.setEnabled(true)
     isVideoEnabled.value = true
-
     removeCameraOffOverlay('local-video')
   }
 }
@@ -408,14 +405,13 @@ const toggleScreenShare = async () => {
       })
     }
   } catch (error) {
-    // Silently handle screen share errors
+    // Handle screen share errors
   }
 }
 
 const initAgora = async () => {
   try {
     const meetingId = route.params.id
-
     const { data } = await axios.post(`/meetings/${meetingId}/agora-token`)
 
     agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
@@ -425,26 +421,20 @@ const initAgora = async () => {
 
       if (mediaType === 'video') {
         remoteUsers.value.add(user.uid)
-
         const remoteContainer = document.getElementById('remote-video-container')
         if (remoteContainer) {
           let playerDiv = document.getElementById(`player-${user.uid}`)
-
           if (!playerDiv) {
             playerDiv = document.createElement('div')
             playerDiv.id = `player-${user.uid}`
             playerDiv.className = 'relative flex-1 min-w-[400px] min-h-[300px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50'
-
             const nameLabel = document.createElement('div')
             nameLabel.className = 'absolute top-4 left-4 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium text-white shadow-lg z-10'
             nameLabel.textContent = `User ${user.uid}`
             playerDiv.appendChild(nameLabel)
-
             remoteContainer.appendChild(playerDiv)
           }
-
           user.videoTrack?.play(`player-${user.uid}`)
-
           removeCameraOffOverlay(`player-${user.uid}`)
         }
       }
@@ -471,22 +461,14 @@ const initAgora = async () => {
       }
     })
 
-    await agoraClient.join(
-      data.appId,
-      data.channelName,
-      data.token,
-      currentUserId.value
-    )
+    await agoraClient.join(data.appId, data.channelName, data.token, currentUserId.value)
 
-    // Check available devices
     const devices = await AgoraRTC.getDevices()
     const audioDevices = devices.filter(device => device.kind === 'audioinput')
     const videoDevices = devices.filter(device => device.kind === 'videoinput')
-
     const hasMicrophone = audioDevices.length > 0
     const hasCamera = videoDevices.length > 0
 
-    // Create audio track if microphone is available
     if (hasMicrophone) {
       try {
         localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
@@ -498,11 +480,9 @@ const initAgora = async () => {
       isAudioEnabled.value = false
     }
 
-    // Create video track if camera is available
     if (hasCamera) {
       try {
         localVideoTrack = await AgoraRTC.createCameraVideoTrack()
-
         const localContainer = document.getElementById('local-video')
         if (localContainer) {
           localVideoTrack.play(localContainer)
@@ -516,7 +496,6 @@ const initAgora = async () => {
       isVideoEnabled.value = false
     }
 
-    // Publish available tracks
     const tracksToPublish = []
     if (localAudioTrack) tracksToPublish.push(localAudioTrack)
     if (localVideoTrack) tracksToPublish.push(localVideoTrack)
@@ -524,7 +503,6 @@ const initAgora = async () => {
     if (tracksToPublish.length > 0) {
       await agoraClient.publish(tracksToPublish)
     }
-
   } catch (error) {
     throw error
   }
@@ -549,7 +527,7 @@ const disconnectAgora = async () => {
 
     remoteUsers.value.clear()
   } catch (error) {
-    // Silently handle disconnect errors
+    // Handle disconnect errors
   }
 }
 
@@ -584,11 +562,11 @@ const initSocket = () => {
   })
 
   socket.on('connect_error', () => {
-    // Silently handle connection errors
+    // Handle connection errors
   })
 
   socket.on('error', () => {
-    // Silently handle socket errors
+    // Handle socket errors
   })
 
   socket.on('user-joined', (data: { socketId: string; userId: number; userName: string; color: string }) => {

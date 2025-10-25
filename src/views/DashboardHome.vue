@@ -1,11 +1,89 @@
 <template>
-  <div class="p-8 space-y-6">
+  <div class="space-y-8">
     <!-- Loading State -->
-    <div v-if="dashboardStore.isLoading" class="flex items-center justify-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <p class="text-muted-foreground">Loading dashboard...</p>
+    <div v-if="dashboardStore.isLoading" class="space-y-8">
+      <!-- Welcome Section Skeleton -->
+      <div class="space-y-2">
+        <Skeleton class="h-9 w-64" />
+        <Skeleton class="h-5 w-48" />
       </div>
+
+      <!-- Quick Actions Skeleton -->
+      <div class="flex gap-3">
+        <Skeleton class="h-12 w-40" />
+        <Skeleton class="h-12 w-40" />
+      </div>
+
+      <!-- Key Metrics Skeleton -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card v-for="i in 4" :key="i">
+          <CardHeader class="pb-2">
+            <Skeleton class="h-4 w-24" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton class="h-8 w-16 mb-1" />
+            <Skeleton class="h-3 w-20" />
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Upcoming Meetings Skeleton -->
+      <Card>
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <Skeleton class="h-6 w-40" />
+              <Skeleton class="h-4 w-32" />
+            </div>
+            <Skeleton class="h-8 w-20" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-3">
+            <div v-for="i in 3" :key="i" class="flex items-center justify-between p-3 rounded-lg border">
+              <div class="flex items-center gap-3 flex-1">
+                <Skeleton class="h-2 w-2 rounded-full" />
+                <div class="flex-1 space-y-2">
+                  <Skeleton class="h-4 w-48" />
+                  <div class="flex items-center gap-4">
+                    <Skeleton class="h-3 w-24" />
+                    <Skeleton class="h-3 w-28" />
+                  </div>
+                </div>
+              </div>
+              <Skeleton class="h-8 w-16" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Action Items Skeleton -->
+      <Card>
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <Skeleton class="h-6 w-40" />
+              <Skeleton class="h-4 w-32" />
+            </div>
+            <Skeleton class="h-8 w-20" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-3">
+            <div v-for="i in 3" :key="i" class="flex items-start gap-3 p-3 rounded-lg border">
+              <Skeleton class="h-4 w-4 rounded-full mt-1" />
+              <div class="flex-1 space-y-2">
+                <Skeleton class="h-4 w-56" />
+                <div class="flex items-center gap-3">
+                  <Skeleton class="h-3 w-24" />
+                  <Skeleton class="h-3 w-32" />
+                </div>
+              </div>
+              <Skeleton class="h-5 w-12" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
 
     <!-- Error State -->
@@ -18,72 +96,80 @@
     <!-- Dashboard Content -->
     <template v-else-if="dashboardStore.data">
       <!-- Welcome Section -->
-      <div>
-        <h1 class="text-3xl font-bold">Welcome back, {{ authStore.user?.name }}!</h1>
-        <p class="text-muted-foreground mt-1">Here's what's happening today</p>
+      <div class="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/10">
+        <h1 class="text-3xl font-bold tracking-tight">Welcome back, {{ authStore.user?.name }}!</h1>
+        <p class="text-muted-foreground mt-2 text-lg">Here's what's happening today</p>
       </div>
 
       <!-- Quick Actions -->
       <div class="flex gap-3">
-        <Button size="lg" class="gap-2" @click="showCreateMeeting = true">
+        <Button size="lg" class="gap-2 h-12 px-6 rounded-xl shadow-sm" @click="showCreateMeeting = true">
           <Plus class="h-4 w-4" />
           Create Meeting
         </Button>
-        <Button variant="outline" size="lg" class="gap-2" @click="router.push('/dashboard/meetings')">
+        <Button variant="outline" size="lg" class="gap-2 h-12 px-6 rounded-xl" @click="router.push('/dashboard/meetings')">
           <List class="h-4 w-4" />
           View All Meetings
         </Button>
       </div>
 
       <!-- Key Metrics -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Today's Meetings</CardTitle>
-            <Calendar class="h-4 w-4 text-muted-foreground" />
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card class="rounded-xl border-0 shadow-sm bg-gradient-to-br from-card to-card/50">
+          <CardHeader class="flex flex-row items-center justify-between pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground">Today's Meetings</CardTitle>
+            <div class="p-2 rounded-lg bg-primary/10">
+              <Calendar class="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">{{ dashboardStore.today?.meetingsCount || 0 }}</div>
-            <p class="text-xs text-muted-foreground">Scheduled for today</p>
+            <div class="text-3xl font-bold">{{ dashboardStore.today?.meetingsCount || 0 }}</div>
+            <p class="text-sm text-muted-foreground mt-1">Scheduled for today</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Pending Actions</CardTitle>
-            <AlertCircle class="h-4 w-4 text-orange-500" />
+        <Card class="rounded-xl border-0 shadow-sm bg-gradient-to-br from-card to-card/50">
+          <CardHeader class="flex flex-row items-center justify-between pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground">Pending Actions</CardTitle>
+            <div class="p-2 rounded-lg bg-orange-500/10">
+              <AlertCircle class="h-4 w-4 text-orange-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">{{ pendingActionsCount }}</div>
-            <p class="text-xs text-muted-foreground">Tasks to complete</p>
+            <div class="text-3xl font-bold">{{ pendingActionsCount }}</div>
+            <p class="text-sm text-muted-foreground mt-1">Tasks to complete</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">This Week</CardTitle>
-            <TrendingUp class="h-4 w-4 text-green-500" />
+        <Card class="rounded-xl border-0 shadow-sm bg-gradient-to-br from-card to-card/50">
+          <CardHeader class="flex flex-row items-center justify-between pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground">This Week</CardTitle>
+            <div class="p-2 rounded-lg bg-green-500/10">
+              <TrendingUp class="h-4 w-4 text-green-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">{{ dashboardStore.thisWeek?.meetingsCount || 0 }}</div>
-            <p class="text-xs text-muted-foreground">meetings scheduled</p>
+            <div class="text-3xl font-bold">{{ dashboardStore.thisWeek?.meetingsCount || 0 }}</div>
+            <p class="text-sm text-muted-foreground mt-1">meetings scheduled</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Completion Rate</CardTitle>
-            <CheckCircle2 class="h-4 w-4 text-blue-500" />
+        <Card class="rounded-xl border-0 shadow-sm bg-gradient-to-br from-card to-card/50">
+          <CardHeader class="flex flex-row items-center justify-between pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground">Completion Rate</CardTitle>
+            <div class="p-2 rounded-lg bg-blue-500/10">
+              <CheckCircle2 class="h-4 w-4 text-blue-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">{{ completionRate }}%</div>
-            <p class="text-xs text-muted-foreground">of action items</p>
+            <div class="text-3xl font-bold">{{ completionRate }}%</div>
+            <p class="text-sm text-muted-foreground mt-1">of action items</p>
           </CardContent>
         </Card>
       </div>
 
       <!-- Upcoming Meetings -->
-      <Card>
+      <Card class="rounded-xl border-0 shadow-sm">
         <CardHeader>
           <div class="flex items-center justify-between">
             <div>
@@ -98,7 +184,7 @@
         <CardContent>
           <div class="space-y-3">
             <div v-for="meeting in dashboardStore.today?.meetings || []" :key="meeting.id"
-              class="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer">
+              class="flex items-center justify-between p-4 rounded-xl border border-border/50 hover:bg-accent/50 transition-all duration-200 cursor-pointer hover:shadow-sm">
               <div class="flex items-center gap-3 flex-1">
                 <div :class="`w-2 h-2 rounded-full ${meeting.status === 'ACTIVE' ? 'bg-green-500' :
                   meeting.status === 'SCHEDULED' ? 'bg-blue-500' :
@@ -134,7 +220,7 @@
         </CardContent>
       </Card>
 
-      <Card>
+      <Card class="rounded-xl border-0 shadow-sm">
         <CardHeader>
           <div class="flex items-center justify-between">
             <div>
@@ -149,7 +235,7 @@
         <CardContent>
           <div class="space-y-3">
             <div v-for="item in pendingActionItems" :key="item.id" @click="router.push(`/dashboard/action-items`)"
-              class="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer group">
+              class="flex items-start gap-3 p-4 rounded-xl border border-border/50 hover:bg-accent/50 transition-all duration-200 cursor-pointer group hover:shadow-sm">
               <!-- Status Indicator -->
               <div class="mt-1">
                 <div v-if="item.status === 'IN_PROGRESS'"
@@ -199,6 +285,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 import { formatMeetingTime, formatDueDate } from '@/lib/dateHelpers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Card,
   CardContent,

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-muted/30">
     <div v-if="meetingStore.isLoading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center gap-4">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -16,38 +16,37 @@
     <div v-else-if="meeting" class="max-w-6xl mx-auto p-6">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6">
         <div class="space-y-6">
-          <Card class="border-gray-200 shadow-sm">
-            <CardContent class="p-6">
+          <Card class="border-0 shadow-sm rounded-xl bg-gradient-to-br from-card to-card/50">
+            <CardContent class="p-5">
               <div class="flex items-start justify-between mb-3">
-                <h1 class="text-2xl font-bold text-gray-900">{{ meeting.title }}</h1>
+                <h1 class="text-2xl font-bold tracking-tight">{{ meeting.title }}</h1>
                 <div class="flex items-center gap-2">
                   <Button v-if="meeting.status === 'ACTIVE'" @click="joinMeeting"
-                    class="bg-green-600 hover:bg-green-700 text-white">
+                    class="bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm">
                     <Video class="h-4 w-4 mr-1.5" />
                     Join Meeting
                   </Button>
 
-                  <Button v-else-if="meeting.status === 'SCHEDULED'" disabled variant="outline" size="sm">
+                  <Button v-else-if="meeting.status === 'SCHEDULED'" disabled variant="outline" size="sm" class="rounded-xl">
                     <Clock class="h-4 w-4 mr-1.5" />
                     Scheduled
                   </Button>
 
-                  <Button size="sm" variant="outline" @click="showEditMeeting = true">
+                  <Button size="sm" variant="outline" @click="showEditMeeting = true" class="rounded-xl">
                     <Edit class="h-3.5 w-3.5 mr-1.5" />
                     Edit
                   </Button>
                 </div>
               </div>
-              <p class="text-sm text-gray-600 mb-3">{{ meeting.description }}</p>
+              <p class="text-muted-foreground mb-3">{{ meeting.description }}</p>
               <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500">{{ formatFullDate(meeting.date) }} • {{ formatTime(meeting.date)
+                <span class="text-sm text-muted-foreground">{{ formatFullDate(meeting.date) }} • {{ formatTime(meeting.date)
                 }}</span>
-                <Badge :class="{
-                  'bg-blue-100 text-blue-700 hover:bg-blue-100': meeting.status === 'SCHEDULED',
-                  'bg-green-100 text-green-700 hover:bg-green-100': meeting.status === 'ENDED',
-                  'bg-purple-100 text-purple-700 hover:bg-purple-100': meeting.status === 'ACTIVE',
-                  'bg-red-100 text-red-700 hover:bg-red-100': meeting.status === 'CANCELLED',
-                }" class="text-xs font-normal px-2 py-0.5">
+                <Badge :variant="meeting.status === 'SCHEDULED' ? 'default' :
+                  meeting.status === 'ENDED' ? 'secondary' :
+                    meeting.status === 'ACTIVE' ? 'default' :
+                      meeting.status === 'CANCELLED' ? 'destructive' : 'secondary'"
+                  class="text-xs font-normal px-3 py-1 rounded-full">
                   {{ meeting.status === 'SCHEDULED' ? 'Scheduled' :
                     meeting.status === 'ENDED' ? 'Ended' :
                       meeting.status === 'ACTIVE' ? 'Active' :
@@ -58,11 +57,11 @@
             </CardContent>
           </Card>
 
-          <Card class="border-gray-200 shadow-sm">
-            <CardHeader class="pb-4 border-b border-gray-100">
+          <Card class="border-0 shadow-sm rounded-xl bg-gradient-to-br from-card to-card/50">
+            <CardHeader class="pb-4 border-b border-border/50">
               <div class="flex items-center justify-between">
-                <CardTitle class="text-base font-semibold text-gray-900">Meeting Notes</CardTitle>
-                <Badge v-if="meeting.status === 'ACTIVE'" class="bg-green-100 text-green-700 hover:bg-green-100">
+                <CardTitle class="text-lg font-semibold">Meeting Notes</CardTitle>
+                <Badge v-if="meeting.status === 'ACTIVE'" variant="default" class="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
                   <div class="w-2 h-2 bg-green-600 rounded-full mr-1.5 animate-pulse"></div>
                   Live
                 </Badge>
@@ -70,42 +69,42 @@
             </CardHeader>
             <CardContent class="p-6">
               <div v-if="meeting.notes && meeting.notes.content">
-                <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto">
+                <div class="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto bg-muted/30 rounded-lg p-4">
                   {{ meeting.notes.content }}
                 </div>
               </div>
 
               <div v-else class="text-center py-12">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-3">
-                  <FileText class="h-7 w-7 text-gray-400" />
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-muted/50 mb-4">
+                  <FileText class="h-8 w-8 text-muted-foreground/50" />
                 </div>
 
                 <div v-if="meeting.status === 'SCHEDULED'">
-                  <p class="text-sm font-medium text-gray-900 mb-1">No notes yet</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-sm font-medium mb-1">No notes yet</p>
+                  <p class="text-xs text-muted-foreground">
                     Notes will be created when the meeting starts
                   </p>
                 </div>
 
                 <div v-else-if="meeting.status === 'ACTIVE'">
-                  <p class="text-sm font-medium text-gray-900 mb-1">Meeting in progress</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-sm font-medium mb-1">Meeting in progress</p>
+                  <p class="text-xs text-muted-foreground">
                     Join now to start taking collaborative notes
                   </p>
                 </div>
 
                 <!-- Ended Meeting -->
                 <div v-else-if="meeting.status === 'ENDED'">
-                  <p class="text-sm font-medium text-gray-900 mb-1">No notes were taken</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-sm font-medium mb-1">No notes were taken</p>
+                  <p class="text-xs text-muted-foreground">
                     This meeting ended without any notes being recorded
                   </p>
                 </div>
 
                 <!-- Cancelled Meeting -->
                 <div v-else-if="meeting.status === 'CANCELLED'">
-                  <p class="text-sm font-medium text-gray-900 mb-1">Meeting cancelled</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-sm font-medium mb-1">Meeting cancelled</p>
+                  <p class="text-xs text-muted-foreground">
                     This meeting was cancelled
                   </p>
                 </div>
@@ -118,34 +117,34 @@
         </div>
 
         <div>
-          <Card class="border-gray-200 shadow-sm">
-            <CardHeader class="pb-4 border-b border-gray-100">
+          <Card class="border-0 shadow-sm rounded-xl bg-gradient-to-br from-card to-card/50">
+            <CardHeader class="pb-4 border-b border-border/50">
               <div class="flex items-center justify-between">
-                <CardTitle class="text-base font-semibold text-gray-900">Participants ({{ meeting.participants.length +
+                <CardTitle class="text-lg font-semibold">Participants ({{ meeting.participants.length +
                   1 }})</CardTitle>
               </div>
             </CardHeader>
             <CardContent class="p-4">
               <div class="space-y-2">
-                <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group">
+                <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-all duration-200 group">
                   <div class="relative">
                     <div
-                      class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center flex-shrink-0">
+                      class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center flex-shrink-0 shadow-sm">
                       <span class="text-sm font-semibold text-white">
                         {{ getInitials(meeting.creator.name) }}
                       </span>
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900">{{ meeting.creator.name }}</p>
-                    <p class="text-xs text-gray-500">Creator</p>
+                    <p class="text-sm font-medium">{{ meeting.creator.name }}</p>
+                    <p class="text-xs text-muted-foreground">Creator</p>
                   </div>
                 </div>
 
                 <div v-for="(participant, index) in meeting.participants" :key="participant.id"
-                  class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group">
+                  class="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-all duration-200 group">
                   <div class="relative">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :class="{
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm" :class="{
                       'bg-gradient-to-br from-orange-400 to-pink-400': index % 3 === 0,
                       'bg-gradient-to-br from-blue-400 to-cyan-400': index % 3 === 1,
                       'bg-gradient-to-br from-purple-400 to-pink-400': index % 3 === 2,
@@ -156,34 +155,34 @@
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900">{{ participant.user.name }}</p>
-                    <p class="text-xs text-gray-500 capitalize">{{ participant.role.toLowerCase() }}</p>
+                    <p class="text-sm font-medium">{{ participant.user.name }}</p>
+                    <p class="text-xs text-muted-foreground capitalize">{{ participant.role.toLowerCase() }}</p>
                   </div>
                   <!-- Only creator can remove other participants -->
                   <button v-if="isCreator" @click="handleRemoveParticipant(participant)"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity" title="Remove participant">
-                    <X class="h-4 w-4 text-gray-400 hover:text-red-600" />
+                    class="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-destructive/10" title="Remove participant">
+                    <X class="h-4 w-4 text-muted-foreground hover:text-destructive" />
                   </button>
                 </div>
 
                 <div v-if="meeting.participants.length === 0" class="text-center py-8">
-                  <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
-                    <Users class="h-6 w-6 text-gray-400" />
+                  <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/50 mb-3">
+                    <Users class="h-7 w-7 text-muted-foreground/50" />
                   </div>
-                  <p class="text-xs text-gray-500">No other participants yet</p>
+                  <p class="text-xs text-muted-foreground">No other participants yet</p>
                 </div>
               </div>
 
-              <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
+              <div class="mt-4 pt-4 border-t border-border/50 space-y-2">
                 <Button variant="ghost" size="sm"
-                  class="w-full justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  class="w-full justify-center rounded-xl hover:bg-primary/10 hover:text-primary"
                   @click="showAddParticipant = true">
                   <Plus class="h-4 w-4 mr-1.5" />
                   Add Participant
                 </Button>
 
                 <Button v-if="isCreator || isParticipant" variant="ghost" size="sm"
-                  class="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
+                  class="w-full justify-center rounded-xl hover:bg-destructive/10 hover:text-destructive"
                   @click="handleLeaveMeeting">
                   <X class="h-4 w-4 mr-1.5" />
                   Leave Meeting
