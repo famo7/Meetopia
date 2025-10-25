@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-background">
     <div class="max-w-7xl mx-auto p-6">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Action Items</h1>
-        <p class="text-gray-600">Overview of all action items across your meetings</p>
+        <h1 class="text-3xl font-bold text-foreground mb-2">Action Items</h1>
+        <p class="text-muted-foreground">Overview of all action items across your meetings</p>
       </div>
 
       <!-- Stats Cards -->
@@ -13,11 +13,11 @@
           <CardContent class="pt-6">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Total</p>
-                <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
+                <p class="text-sm text-muted-foreground">Total</p>
+                <p class="text-2xl font-bold text-foreground">{{ stats.total }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <ListTodo class="h-6 w-6 text-blue-600" />
+              <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <ListTodo class="h-6 w-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -27,11 +27,11 @@
           <CardContent class="pt-6">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Open</p>
+                <p class="text-sm text-muted-foreground">Open</p>
                 <p class="text-2xl font-bold text-blue-600">{{ stats.open }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Circle class="h-6 w-6 text-blue-600" />
+              <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                <Circle class="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </CardContent>
@@ -41,11 +41,11 @@
           <CardContent class="pt-6">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">In Progress</p>
+                <p class="text-sm text-muted-foreground">In Progress</p>
                 <p class="text-2xl font-bold text-purple-600">{{ stats.inProgress }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <Clock class="h-6 w-6 text-purple-600" />
+              <div class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <Clock class="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </CardContent>
@@ -55,11 +55,11 @@
           <CardContent class="pt-6">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-gray-600">Completed</p>
+                <p class="text-sm text-muted-foreground">Completed</p>
                 <p class="text-2xl font-bold text-green-600">{{ stats.done }}</p>
               </div>
-              <div class="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 class="h-6 w-6 text-green-600" />
+              <div class="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <CheckCircle2 class="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </CardContent>
@@ -67,19 +67,19 @@
       </div>
 
       <!-- Tabs for filtering -->
-      <div class="mb-6 border-b border-gray-200">
+      <div class="mb-6 border-b border-border">
         <nav class="-mb-px flex space-x-8">
           <button v-for="tab in tabs" :key="tab.value" @click="activeTab = tab.value" :class="[
             activeTab === tab.value
               ? 'border-primary text-primary'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border',
             'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
           ]">
             {{ tab.label }}
             <span v-if="tab.count > 0" :class="[
               activeTab === tab.value
                 ? 'bg-primary/10 text-primary'
-                : 'bg-gray-100 text-gray-600',
+                : 'bg-muted text-muted-foreground',
               'ml-2 py-0.5 px-2 rounded-full text-xs font-medium'
             ]">
               {{ tab.count }}
@@ -105,12 +105,12 @@
       <div v-else class="space-y-6">
         <!-- Grouped by Meeting -->
         <div v-for="meeting in filteredMeetings" :key="meeting.id">
-          <Card class="border-gray-200 shadow-sm">
-            <CardHeader class="pb-4 border-b border-gray-100">
+          <Card class="border-border shadow-sm">
+            <CardHeader class="pb-4 border-b border-border">
               <div class="flex items-center justify-between">
                 <div>
-                  <CardTitle class="text-lg font-semibold text-gray-900">{{ meeting.title }}</CardTitle>
-                  <p class="text-xs text-gray-500 mt-1">
+                  <CardTitle class="text-lg font-semibold text-foreground">{{ meeting.title }}</CardTitle>
+                  <p class="text-xs text-muted-foreground mt-1">
                     {{ formatFullDate(meeting.date) }} • {{ meeting.actionItems.length }} items
                   </p>
                 </div>
@@ -124,7 +124,7 @@
               <!-- Read-only list of action items -->
               <div class="space-y-3">
                 <div v-for="item in meeting.actionItems" :key="item.id"
-                  class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                  class="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                   <!-- Status indicator -->
                   <div class="flex-shrink-0 mt-1">
                     <div :class="[
@@ -138,14 +138,14 @@
                   <div class="flex-1 min-w-0">
                     <p :class="[
                       'text-sm font-medium',
-                      item.status === 'DONE' ? 'line-through text-gray-500' : 'text-gray-900'
+                      item.status === 'DONE' ? 'line-through text-muted-foreground' : 'text-foreground'
                     ]">
                       {{ item.title }}
                     </p>
-                    <p v-if="item.description" class="text-xs text-gray-500 mt-1">
+                    <p v-if="item.description" class="text-xs text-muted-foreground mt-1">
                       {{ item.description }}
                     </p>
-                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                    <div class="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       <span class="flex items-center gap-1">
                         <User class="h-3 w-3" />
                         {{ item.assignedTo.name }}
@@ -172,11 +172,11 @@
         </div>
 
         <div v-if="filteredMeetings.length === 0" class="text-center py-12">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-            <ListTodo class="h-8 w-8 text-gray-400" />
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+            <ListTodo class="h-8 w-8 text-muted-foreground/50" />
           </div>
-          <p class="text-lg font-medium text-gray-900 mb-1">No action items found</p>
-          <p class="text-sm text-gray-500 mb-4">
+          <p class="text-lg font-medium text-foreground mb-1">No action items found</p>
+          <p class="text-sm text-muted-foreground mb-4">
             {{ getEmptyStateMessage() }}
           </p>
           <Button @click="$router.push('/dashboard/meetings')">

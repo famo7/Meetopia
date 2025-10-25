@@ -1,30 +1,30 @@
 <template>
   <Dialog v-model:open="isOpen">
     <DialogContent class="max-w-lg p-0">
-      <DialogHeader class="px-6 pt-6 pb-4 border-b border-slate-100">
-        <DialogTitle class="text-xl font-semibold text-slate-900">
+      <DialogHeader class="px-6 pt-6 pb-4 border-b border-border">
+        <DialogTitle class="text-xl font-semibold text-foreground">
           Update Action Item
         </DialogTitle>
-        <DialogDescription class="text-slate-600 mt-1">
+        <DialogDescription class="text-muted-foreground mt-1">
           Modify the details of this action item.
         </DialogDescription>
       </DialogHeader>
 
       <div class="px-6 py-4 space-y-5">
         <div class="space-y-2">
-          <Label for="title" class="text-sm font-medium text-slate-700">Title *</Label>
+          <Label for="title" class="text-sm font-medium text-foreground">Title *</Label>
           <Input id="title" v-model="formData.title" placeholder="What needs to be done?" required class="h-10" />
         </div>
 
         <div class="space-y-2">
-          <Label for="description" class="text-sm font-medium text-slate-700">Description</Label>
+          <Label for="description" class="text-sm font-medium text-foreground">Description</Label>
           <Textarea id="description" v-model="formData.description" placeholder="Add more details about this task..."
             rows="3" class="resize-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="priority" class="text-sm font-medium text-slate-700">Priority</Label>
+            <Label for="priority" class="text-sm font-medium text-foreground">Priority</Label>
             <Select v-model="formData.priority">
               <SelectTrigger class="h-10">
                 <SelectValue />
@@ -53,7 +53,7 @@
           </div>
 
           <div class="space-y-2">
-            <Label for="status" class="text-sm font-medium text-slate-700">Status</Label>
+            <Label for="status" class="text-sm font-medium text-foreground">Status</Label>
             <Select v-model="formData.status">
               <SelectTrigger class="h-10">
                 <SelectValue />
@@ -61,7 +61,7 @@
               <SelectContent>
                 <SelectItem value="OPEN" label="Open">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                    <div class="w-2 h-2 rounded-full bg-muted-foreground"></div>
                     Open
                   </div>
                 </SelectItem>
@@ -83,7 +83,7 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="assignedTo" class="text-sm font-medium text-slate-700">Assigned To *</Label>
+          <Label for="assignedTo" class="text-sm font-medium text-foreground">Assigned To *</Label>
 
           <Select v-model="formData.assignedToId">
             <SelectTrigger class="h-10">
@@ -98,14 +98,14 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date</Label>
+          <Label for="dueDate" class="text-sm font-medium text-foreground">Due Date</Label>
           <DatePicker id="dueDate" :model-value="formData.dueDate ? new Date(formData.dueDate) : undefined"
             @update:model-value="(date: Date | undefined) => formData.dueDate = date ? date.toLocaleDateString('en-CA') : ''"
             placeholder="Select date" class="h-10" />
         </div>
       </div>
 
-      <DialogFooter class="px-6 py-4 bg-slate-50 border-t border-slate-100 gap-3">
+      <DialogFooter class="px-6 py-4 bg-muted/50 border-t border-border gap-3">
         <Button type="button" variant="outline" @click="closeDialog" class="flex-1">
           Cancel
         </Button>

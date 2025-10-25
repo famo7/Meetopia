@@ -27,6 +27,22 @@
           </div>
         </CardContent>
       </Card>
+
+      <Card class="mt-6">
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Customize your theme preference</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <p class="text-sm font-medium text-foreground">Theme</p>
+              <p class="text-xs text-muted-foreground">Choose between light and dark mode</p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
@@ -35,6 +51,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { User } from 'lucide-vue-next'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const authStore = useAuthStore()
 </script>

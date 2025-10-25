@@ -1,17 +1,17 @@
 <template>
-  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
     <!-- Header -->
-    <div class="px-6 py-4 flex items-center justify-between border-b border-slate-100">
+    <div class="px-6 py-4 flex items-center justify-between border-b border-border">
       <div class="flex items-center gap-3">
         <div class="relative">
-          <CheckSquare class="h-5 w-5 text-slate-600" />
+          <CheckSquare class="h-5 w-5 text-muted-foreground" />
           <div v-if="hasCompletedItems"
-            class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></div>
+            class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-card"></div>
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-slate-900">Action Items</h3>
+          <h3 class="text-lg font-semibold text-foreground">Action Items</h3>
           <div class="flex items-center gap-2 mt-1">
-            <span class="text-sm text-slate-600">{{ actionItems.length }} total</span>
+            <span class="text-sm text-muted-foreground">{{ actionItems.length }} total</span>
             <span v-if="hasPendingItems" class="text-sm text-amber-600 font-medium">
               {{ pendingItemsCount }} pending
             </span>
@@ -21,12 +21,12 @@
 
       <div class="flex items-center gap-2">
         <button @click="openCreateDialog"
-          class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+          class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors">
           <Plus class="h-4 w-4" />
           <span class="hidden sm:inline">Add Item</span>
         </button>
-        <button @click="toggleExpanded" class="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-          <ChevronDown class="h-4 w-4 text-slate-500 transition-transform" :class="{ 'rotate-180': isExpanded }" />
+        <button @click="toggleExpanded" class="p-2 hover:bg-accent rounded-lg transition-colors">
+          <ChevronDown class="h-4 w-4 text-muted-foreground transition-transform" :class="{ 'rotate-180': isExpanded }" />
         </button>
       </div>
     </div>
@@ -36,8 +36,8 @@
       enter-to-class="opacity-100 translate-y-0" leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
       <div v-show="isExpanded">
-        <div v-if="actionItems.length > 0" class="divide-y divide-slate-100">
-          <div v-for="item in sortedActionItems" :key="item.id" class="p-4 hover:bg-slate-50 transition-colors group">
+        <div v-if="actionItems.length > 0" class="divide-y divide-border">
+          <div v-for="item in sortedActionItems" :key="item.id" class="p-4 hover:bg-muted/50 transition-colors group">
             <div class="flex items-start gap-3">
               <!-- Status Checkbox -->
               <button @click="toggleItemStatus(item)"
@@ -51,11 +51,11 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-2">
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-medium text-slate-900 text-sm leading-tight"
+                    <h4 class="font-medium text-foreground text-sm leading-tight"
                       :class="{ 'line-through opacity-60': item.status === 'DONE' }">
                       {{ item.title }}
                     </h4>
-                    <p v-if="item.description" class="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
+                    <p v-if="item.description" class="text-muted-foreground mt-1 text-sm leading-relaxed line-clamp-2">
                       {{ item.description }}
                     </p>
                   </div>
@@ -68,7 +68,7 @@
                 </div>
 
                 <!-- Meta Information -->
-                <div class="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                <div class="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                   <div class="flex items-center gap-1">
                     <User class="h-3 w-3" />
                     <span>{{ item.assignedTo?.name }}{{ item.assignedTo?.id === authStore.user?.id ? ' (You)' : ''
@@ -89,17 +89,17 @@
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button @click="editItem(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors">
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-accent rounded text-xs text-muted-foreground transition-colors">
                     <Edit class="h-3 w-3" />
                     Edit
                   </button>
                   <button @click="cycleStatus(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded text-xs text-slate-600 transition-colors">
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-accent rounded text-xs text-muted-foreground transition-colors">
                     <RefreshCw class="h-3 w-3" />
                     {{ getNextStatusAction(item.status) }}
                   </button>
                   <button @click="deleteItem(item)"
-                    class="flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded text-xs text-red-600 transition-colors">
+                    class="flex items-center gap-1 px-2 py-1 hover:bg-destructive/10 rounded text-xs text-destructive transition-colors">
                     <Trash2 class="h-3 w-3" />
                     Remove
                   </button>
@@ -111,13 +111,13 @@
 
         <!-- Empty State -->
         <div v-else class="px-6 py-12 text-center">
-          <div class="mx-auto w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mb-4">
-            <CheckSquare class="h-8 w-8 text-slate-400" />
+          <div class="mx-auto w-16 h-16 bg-muted rounded-xl flex items-center justify-center mb-4">
+            <CheckSquare class="h-8 w-8 text-muted-foreground/50" />
           </div>
-          <h3 class="text-lg font-semibold text-slate-900 mb-2">No action items yet</h3>
-          <p class="text-slate-600 mb-6">Start collaborating by creating your first action item</p>
+          <h3 class="text-lg font-semibold text-foreground mb-2">No action items yet</h3>
+          <p class="text-muted-foreground mb-6">Start collaborating by creating your first action item</p>
           <button @click="openCreateDialog"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors">
             <Plus class="h-4 w-4" />
             Create First Item
           </button>
@@ -242,33 +242,33 @@ const getStatusClasses = (status: ActionItemStatus) => {
     case 'IN_PROGRESS':
       return 'bg-blue-500 border-blue-500 text-white'
     default:
-      return 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
+      return 'border-border hover:border-primary hover:bg-primary/10'
   }
 }
 
 const getPriorityClasses = (priority: Priority) => {
   switch (priority) {
     case 'HIGH':
-      return 'bg-red-100 text-red-700'
+      return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
     case 'MEDIUM':
-      return 'bg-amber-100 text-amber-700'
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
     case 'LOW':
-      return 'bg-green-100 text-green-700'
+      return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
     default:
-      return 'bg-slate-100 text-slate-700'
+      return 'bg-muted text-muted-foreground'
   }
 }
 
 const getStatusColor = (status: ActionItemStatus) => {
   switch (status) {
     case 'OPEN':
-      return 'bg-slate-400'
+      return 'bg-muted-foreground'
     case 'IN_PROGRESS':
       return 'bg-blue-500'
     case 'DONE':
       return 'bg-emerald-500'
     default:
-      return 'bg-slate-400'
+      return 'bg-muted-foreground'
   }
 }
 

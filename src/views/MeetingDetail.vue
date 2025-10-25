@@ -61,8 +61,8 @@
             <CardHeader class="pb-4 border-b border-border/50">
               <div class="flex items-center justify-between">
                 <CardTitle class="text-lg font-semibold">Meeting Notes</CardTitle>
-                <Badge v-if="meeting.status === 'ACTIVE'" variant="default" class="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
-                  <div class="w-2 h-2 bg-green-600 rounded-full mr-1.5 animate-pulse"></div>
+                <Badge v-if="meeting.status === 'ACTIVE'" variant="default" class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 border-green-200 dark:border-green-800">
+                  <div class="w-2 h-2 bg-green-600 dark:bg-green-400 rounded-full mr-1.5 animate-pulse"></div>
                   Live
                 </Badge>
               </div>

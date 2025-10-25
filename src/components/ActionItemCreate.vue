@@ -1,30 +1,30 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="max-w-lg p-0">
-      <DialogHeader class="px-6 pt-6 pb-4 border-b border-slate-100">
-        <DialogTitle class="text-xl font-semibold text-slate-900">
+      <DialogHeader class="px-6 pt-6 pb-4 border-b border-border">
+        <DialogTitle class="text-xl font-semibold text-foreground">
           Create Action Item
         </DialogTitle>
-        <DialogDescription class="text-slate-600 mt-1">
+        <DialogDescription class="text-muted-foreground mt-1">
           Add a new task to track progress and assignments.
         </DialogDescription>
       </DialogHeader>
 
       <div class="px-6 py-4 space-y-5">
         <div class="space-y-2">
-          <Label for="title" class="text-sm font-medium text-slate-700">Title *</Label>
+          <Label for="title" class="text-sm font-medium text-foreground">Title *</Label>
           <Input id="title" v-model="safeFormData.title" placeholder="What needs to be done?" required class="h-10" />
         </div>
 
         <div class="space-y-2">
-          <Label for="description" class="text-sm font-medium text-slate-700">Description</Label>
+          <Label for="description" class="text-sm font-medium text-foreground">Description</Label>
           <Textarea id="description" v-model="safeFormData.description"
             placeholder="Add more details about this task..." rows="3" class="resize-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="priority" class="text-sm font-medium text-slate-700">Priority</Label>
+            <Label for="priority" class="text-sm font-medium text-foreground">Priority</Label>
             <Select v-model="safeFormData.priority">
               <SelectTrigger class="h-10">
                 <SelectValue />
@@ -53,13 +53,13 @@
           </div>
 
           <div class="space-y-2">
-            <Label for="dueDate" class="text-sm font-medium text-slate-700">Due Date</Label>
+            <Label for="dueDate" class="text-sm font-medium text-foreground">Due Date</Label>
             <DatePicker id="dueDate" v-model="dueDateValue" placeholder="Select date" class="h-10" />
           </div>
         </div>
 
         <div class="space-y-2">
-          <Label for="assignedTo" class="text-sm font-medium text-slate-700">Assigned To *</Label>
+          <Label for="assignedTo" class="text-sm font-medium text-foreground">Assigned To *</Label>
           <Select v-model="formData.assignedToId">
             <SelectTrigger class="h-10">
               <SelectValue placeholder="Select team member" />
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <DialogFooter class="px-6 py-4 bg-slate-50 border-t border-slate-100 gap-3">
+      <DialogFooter class="px-6 py-4 bg-muted/50 border-t border-border gap-3">
         <Button type="button" variant="outline" @click="$emit('update:open', false)" class="flex-1">
           Cancel
         </Button>
