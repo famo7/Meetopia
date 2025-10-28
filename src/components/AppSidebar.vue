@@ -17,7 +17,7 @@ import {
   SidebarTrigger,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { LayoutDashboard, Calendar, CheckCircle2, History, User, LogOut, Home, Settings } from 'lucide-vue-next'
+import { LayoutDashboard, Calendar, CheckCircle2, Bell, User, LogOut, Home, Settings } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,9 +40,9 @@ const menuItems = [
     icon: CheckCircle2,
   },
   {
-    title: 'History',
-    url: '/dashboard/history',
-    icon: History,
+    title: 'Notifications',
+    url: '/dashboard/notifications',
+    icon: Bell,
   },
 ]
 

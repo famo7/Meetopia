@@ -74,6 +74,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { useNotificationStore } from '@/stores/notification'
 import type { Notification } from '@/types/notification'
+import {
+  getNotificationColorClass,
+  formatRelativeTime,
+  handleNotificationNavigation
+} from '@/lib/notificationUtils'
 
 const notificationStore = useNotificationStore()
 const router = useRouter()
@@ -106,76 +111,10 @@ const handleNotificationClick = async (notification: Notification) => {
     }
   }
 
-  handleNotificationNavigation(notification)
-}
-
-const handleNotificationNavigation = (notification: Notification) => {
-  switch (notification.type) {
-    case 'ACTION_ITEM_ASSIGNED':
-    case 'ACTION_ITEM_UPDATED':
-      router.push({ name: 'action-items' })
-      break
-    case 'MEETING_UPDATED':
-    case 'MEETING_REMINDER':
-    case 'PARTICIPANT_ADDED':
-      if (notification.relatedId) {
-        router.push({ name: 'meeting-detail', params: { id: notification.relatedId.toString() } })
-      } else {
-        router.push({ name: 'dashboard' })
-      }
-      break
-    case 'INFO':
-    case 'SUCCESS':
-    case 'WARNING':
-    case 'ERROR':
-    default:
-      router.push({ name: 'dashboard' })
-      break
-  }
+  handleNotificationNavigation(notification, router)
 }
 
 const handleViewAll = () => {
-  router.push({ name: 'action-items' })
-}
-
-const getNotificationColorClass = (type: string): string => {
-  const colorMap: Record<string, string> = {
-    'INFO': 'bg-blue-500',
-    'SUCCESS': 'bg-green-500',
-    'WARNING': 'bg-yellow-500',
-    'ERROR': 'bg-red-500',
-    'PARTICIPANT_ADDED': 'bg-purple-500',
-    'ACTION_ITEM_ASSIGNED': 'bg-orange-500',
-    'ACTION_ITEM_UPDATED': 'bg-orange-500',
-    'MEETING_UPDATED': 'bg-blue-500',
-    'MEETING_REMINDER': 'bg-blue-500'
-  }
-  return colorMap[type] || 'bg-gray-500'
-}
-
-const formatRelativeTime = (date: Date): string => {
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (diffInSeconds < 60) {
-    return 'Just now'
-  }
-
-  const diffInMinutes = Math.floor(diffInSeconds / 60)
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) {
-    return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24)
-  if (diffInDays < 7) {
-    return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
-  }
-
-  return date.toLocaleDateString()
+  router.push({ name: 'notifications' })
 }
 </script>

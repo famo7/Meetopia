@@ -62,9 +62,9 @@ const routes = [
         component: ActionItems,
       },
       {
-        path: "history",
-        name: "history",
-        component: () => import('../views/DashboardHome.vue'),
+        path: "notifications",
+        name: "notifications",
+        component: () => import('../views/Notifications.vue'),
       },
       {
         path: "profile",
