@@ -6,7 +6,7 @@
         aria-label="Notifications">
         <Bell class="h-4 w-4" />
         <span v-if="unreadCount > 0"
-          class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-medium text-destructive-foreground">
+          class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground shadow-sm border border-background/50">
           {{ unreadCount > 99 ? '99+' : unreadCount }}
         </span>
       </button>
@@ -15,10 +15,16 @@
     <DropdownMenuContent class="w-80 p-0" align="end" side="bottom">
       <div class="flex items-center justify-between p-4 border-b">
         <h3 class="text-lg font-semibold">Notifications</h3>
-        <Button v-if="unreadCount > 0" variant="ghost" size="sm" @click="handleMarkAllAsRead"
-          :disabled="isMarkingAllAsRead" class="text-xs">
-          Mark all as read
-        </Button>
+        <div class="flex items-center gap-2">
+          <Button v-if="unreadCount > 0" variant="ghost" size="sm" @click="handleMarkAllAsRead"
+            :disabled="isMarkingAllAsRead" class="text-xs">
+            Mark all as read
+          </Button>
+          <Button v-if="notifications.length > 0" variant="ghost" size="sm" @click="showClearAllDialog = true"
+            :disabled="isClearingAll" class="text-xs text-destructive hover:text-destructive">
+            Clear all
+          </Button>
+        </div>
       </div>
 
       <div v-if="isLoading" class="flex items-center justify-center p-8">
@@ -57,6 +63,25 @@
           View all notifications
         </Button>
       </div>
+
+      <!-- Clear All Confirmation Dialog -->
+      <AlertDialog v-model:open="showClearAllDialog">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all notifications?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All your notifications will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction @click="handleClearAll" :disabled="isClearingAll" class="bg-destructive hover:bg-destructive/90">
+              <Loader2 v-if="isClearingAll" class="mr-2 h-4 w-4 animate-spin" />
+              Clear all
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
@@ -64,7 +89,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bell } from 'lucide-vue-next'
+import { Bell, Loader2 } from 'lucide-vue-next'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,6 +97,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useNotificationStore } from '@/stores/notification'
 import type { Notification } from '@/types/notification'
 import {
@@ -84,6 +119,8 @@ const notificationStore = useNotificationStore()
 const router = useRouter()
 const isOpen = ref(false)
 const isMarkingAllAsRead = ref(false)
+const showClearAllDialog = ref(false)
+const isClearingAll = ref(false)
 
 const notifications = computed(() => notificationStore.notifications)
 const unreadCount = computed(() => notificationStore.unreadCount)
@@ -116,5 +153,16 @@ const handleNotificationClick = async (notification: Notification) => {
 
 const handleViewAll = () => {
   router.push({ name: 'notifications' })
+}
+
+const handleClearAll = async () => {
+  try {
+    isClearingAll.value = true
+    await notificationStore.removeAllNotifications()
+    showClearAllDialog.value = false
+    isOpen.value = false
+  } finally {
+    isClearingAll.value = false
+  }
 }
 </script>

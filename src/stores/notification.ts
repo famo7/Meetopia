@@ -102,6 +102,30 @@ export const useNotificationStore = defineStore('notifications', () => {
     }
   }
 
+  const markNotificationAsUnread = async (notificationId: number) => {
+    try {
+      await api.patch(`/notifications/${notificationId}/unread`)
+
+      const notification = notifications.value.find(n => n.id === notificationId)
+      if (notification && notification.isRead) {
+        notification.isRead = false
+        unreadCount.value += 1
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const removeAllNotifications = async () => {
+    try {
+      await api.delete('/notifications/remove-all')
+      notifications.value = []
+      unreadCount.value = 0
+    } catch (error) {
+      throw error
+    }
+  }
+
   const clearNotifications = () => {
     notifications.value = []
     unreadCount.value = 0
@@ -118,6 +142,8 @@ export const useNotificationStore = defineStore('notifications', () => {
     fetchUnreadCount,
     markAllAsRead,
     markNotificationAsRead,
+    markNotificationAsUnread,
+    removeAllNotifications,
     clearNotifications
   }
 })

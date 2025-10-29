@@ -11,6 +11,10 @@
           <CheckCheck class="h-4 w-4" />
           Mark all as read
         </Button>
+        <Button v-if="notifications.length > 0" variant="outline" @click="showClearAllDialog = true" class="gap-2">
+          <Trash2 class="h-4 w-4" />
+          Clear all
+        </Button>
         <Button variant="ghost" size="sm" @click="notificationStore.fetchNotifications()" class="gap-2">
           <RefreshCw class="h-4 w-4" />
           Refresh
@@ -120,6 +124,25 @@
         </CardContent>
       </Card>
     </div>
+
+    <!-- Clear All Confirmation Dialog -->
+    <AlertDialog v-model:open="showClearAllDialog">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Clear all notifications?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. All your notifications will be permanently deleted.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction @click="handleClearAll" :disabled="isClearingAll" class="bg-destructive hover:bg-destructive/90">
+            <Loader2 v-if="isClearingAll" class="mr-2 h-4 w-4 animate-spin" />
+            Clear all
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 
@@ -141,8 +164,20 @@ import {
   Tag,
   MoreHorizontal,
   Check,
-  Mail
+  Mail,
+  Trash2,
+  Loader2
 } from 'lucide-vue-next'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
   getNotificationIcon,
   getNotificationIconBackground,
@@ -155,6 +190,8 @@ const notificationStore = useNotificationStore()
 const router = useRouter()
 const activeFilter = ref('all')
 const isMarkingAllAsRead = ref(false)
+const showClearAllDialog = ref(false)
+const isClearingAll = ref(false)
 
 const notifications = computed(() => notificationStore.notifications)
 const unreadCount = computed(() => notificationStore.unreadCount)
@@ -194,7 +231,17 @@ const handleMarkAsRead = async (id: string) => {
 }
 
 const handleMarkAsUnread = async (id: string) => {
-  await notificationStore.markNotificationAsRead(parseInt(id))
+  await notificationStore.markNotificationAsUnread(parseInt(id))
+}
+
+const handleClearAll = async () => {
+  try {
+    isClearingAll.value = true
+    await notificationStore.removeAllNotifications()
+    showClearAllDialog.value = false
+  } finally {
+    isClearingAll.value = false
+  }
 }
 
 const handleNotificationClick = async (notification: Notification) => {
