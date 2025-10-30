@@ -15,16 +15,6 @@
     <DropdownMenuContent class="w-80 p-0" align="end" side="bottom">
       <div class="flex items-center justify-between p-4 border-b">
         <h3 class="text-lg font-semibold">Notifications</h3>
-        <div class="flex items-center gap-2">
-          <Button v-if="unreadCount > 0" variant="ghost" size="sm" @click="handleMarkAllAsRead"
-            :disabled="isMarkingAllAsRead" class="text-xs">
-            Mark all as read
-          </Button>
-          <Button v-if="notifications.length > 0" variant="ghost" size="sm" @click="showClearAllDialog = true"
-            :disabled="isClearingAll" class="text-xs text-destructive hover:text-destructive">
-            Clear all
-          </Button>
-        </div>
       </div>
 
       <div v-if="isLoading" class="flex items-center justify-center p-8">
@@ -75,7 +65,8 @@
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction @click="handleClearAll" :disabled="isClearingAll" class="bg-destructive hover:bg-destructive/90">
+            <AlertDialogAction @click="handleClearAll" :disabled="isClearingAll"
+              class="bg-destructive hover:bg-destructive/90">
               <Loader2 v-if="isClearingAll" class="mr-2 h-4 w-4 animate-spin" />
               Clear all
             </AlertDialogAction>
@@ -118,7 +109,6 @@ import {
 const notificationStore = useNotificationStore()
 const router = useRouter()
 const isOpen = ref(false)
-const isMarkingAllAsRead = ref(false)
 const showClearAllDialog = ref(false)
 const isClearingAll = ref(false)
 
@@ -130,14 +120,6 @@ onMounted(async () => {
   await notificationStore.fetchNotifications()
 })
 
-const handleMarkAllAsRead = async () => {
-  try {
-    isMarkingAllAsRead.value = true
-    await notificationStore.markAllAsRead()
-  } finally {
-    isMarkingAllAsRead.value = false
-  }
-}
 
 const handleNotificationClick = async (notification: Notification) => {
   if (!notification.isRead) {
@@ -152,6 +134,7 @@ const handleNotificationClick = async (notification: Notification) => {
 }
 
 const handleViewAll = () => {
+  isOpen.value = false
   router.push({ name: 'notifications' })
 }
 

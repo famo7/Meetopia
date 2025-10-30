@@ -27,3 +27,4 @@ dist-ssr
 # Roo AI assistant rules
 .roo/
 AGENTS.md
+CLAUDE.md
