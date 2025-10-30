@@ -40,7 +40,7 @@
               </div>
               <p class="text-muted-foreground mb-3">{{ meeting.description }}</p>
               <div class="flex items-center gap-2">
-                <span class="text-sm text-muted-foreground">{{ formatFullDate(meeting.date) }} • {{ formatTime(meeting.date)
+                <span class="text-sm text-muted-foreground">{{ formatFullDate(meeting.startTime) }} • {{ formatTime(meeting.startTime)
                 }}</span>
                 <Badge :variant="meeting.status === 'SCHEDULED' ? 'default' :
                   meeting.status === 'ENDED' ? 'secondary' :

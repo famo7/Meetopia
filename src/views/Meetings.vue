@@ -77,7 +77,7 @@
                       </p>
                     </td>
                     <td class="p-4 text-sm text-muted-foreground">
-                      {{ formatMeetingTime(meeting.date) }}
+                      {{ formatMeetingTime(meeting.startTime) }}
                     </td>
                     <td class="p-4">
                       <Badge :variant="getStatusVariant(meeting.status)">

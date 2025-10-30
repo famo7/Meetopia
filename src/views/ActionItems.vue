@@ -111,7 +111,7 @@
                 <div>
                   <CardTitle class="text-lg font-semibold text-foreground">{{ meeting.title }}</CardTitle>
                   <p class="text-xs text-muted-foreground mt-1">
-                    {{ formatFullDate(meeting.date) }} • {{ meeting.actionItems.length }} items
+                    {{ formatFullDate(meeting.startTime) }} • {{ meeting.actionItems.length }} items
                   </p>
                 </div>
                 <Button variant="default" size="sm" @click="goToMeeting(meeting.id)">
@@ -273,7 +273,7 @@ const filteredMeetings = computed(() => {
   })
 
   return Array.from(grouped.values()).sort((a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+    new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
   )
 })
 

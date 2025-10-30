@@ -14,13 +14,15 @@ export interface MeetingNote {
 export interface CreateMeetingRequest {
   title: string
   description?: string
-  date: string
+  startTime: string
+  endTime?: string
 }
 
 export interface UpdateMeetingRequest {
   title?: string
   description?: string
-  date?: string
+  startTime?: string
+  endTime?: string
   status?: MeetingStatus
 }
 
@@ -37,7 +39,8 @@ export interface Meeting {
   title: string
   description: string
   shareLink: string
-  date: string
+  startTime: string
+  endTime?: string
   createdAt: string
   updatedAt: string
   status: MeetingStatus

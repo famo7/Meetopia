@@ -20,12 +20,12 @@ export const useMeetingStore = defineStore('meeting', () => {
   // Computed
   const upcomingMeetings = computed(() => {
     const now = new Date()
-    return (meetings.value || []).filter(m => new Date(m.date) > now && m.status === 'SCHEDULED')
+    return (meetings.value || []).filter(m => new Date(m.startTime) > now && m.status === 'SCHEDULED')
   })
 
   const pastMeetings = computed(() => {
     const now = new Date()
-    return (meetings.value || []).filter(m => new Date(m.date) <= now || m.status === 'ENDED')
+    return (meetings.value || []).filter(m => new Date(m.startTime) <= now || m.status === 'ENDED')
   })
 
   const activeMeetings = computed(() => {

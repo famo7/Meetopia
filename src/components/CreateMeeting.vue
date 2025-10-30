@@ -290,7 +290,7 @@ const handleSubmit = async () => {
     await meetingStore.createMeeting({
       title: formData.value.title.trim(),
       description: formData.value.description.trim(),
-      date: dateTime as any,
+      startTime: dateTime as any,
     })
 
     // Success! Reset form, emit success, then close

@@ -196,7 +196,7 @@
                   <div class="flex items-center gap-4 mt-1">
                     <p class="text-sm text-muted-foreground flex items-center gap-1">
                       <Clock class="h-3 w-3" />
-                      {{ formatMeetingTime(meeting.date) }}
+                      {{ formatMeetingTime(meeting.startTime) }}
                     </p>
                     <p class="text-sm text-muted-foreground flex items-center gap-1">
                       <Users class="h-3 w-3" />

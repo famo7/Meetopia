@@ -234,7 +234,7 @@ const loadMeetingData = () => {
   }
 
   // Parse and set date/time
-  const meetingDate = new Date(props.meeting.date)
+  const meetingDate = new Date(props.meeting.startTime)
 
   // Convert to DateValue for calendar
   const year = meetingDate.getFullYear()
@@ -315,7 +315,7 @@ const handleSubmit = async () => {
     await meetingStore.updateMeeting(props.meeting.id, {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || undefined,
-      date: dateTime.toISOString(),
+      startTime: dateTime.toISOString(),
     })
 
     // Success! Emit success, then close
